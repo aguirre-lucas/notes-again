@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "EEE4714/Intro to Cryptography.md",
+                "file": "COP4600/Module 0.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Intro to Cryptography"
+              "title": "Module 0"
             }
           }
         ]
@@ -171,17 +171,25 @@
   },
   "active": "46ce6669e3eec35c",
   "lastOpenFiles": [
+    "Images/Pasted image 20250902224214.png",
+    "Images/Pasted image 20250902223420.png",
+    "Images/Pasted image 20250902223357.png",
+    "Images/Pasted image 20250902221556.png",
+    "Images/Pasted image 20250902221218.png",
+    "Images/Pasted image 20250902221147.png",
+    "CIS4930/Lab0-Notes.md",
+    "COP4600/Module 0.md",
+    "COP4600",
+    "CIS4930/8-27 Class.md",
+    "EEE4714/Intro to Cryptography.md",
+    "EEE4714/Intro to HW Sec and Trust.md",
     "Images/Pasted image 20250828164805.png",
     "Images/Pasted image 20250828164330.png",
-    "CIS4930/Lab0-Notes.md",
-    "EEE4714/Intro to Cryptography.md",
-    "CIS4930/8-27 Class.md",
     "Images/Pasted image 20250827142941.png",
     "Images/Pasted image 20250827142806.png",
     "Images/Pasted image 20250827140535.png",
     "Images",
-    "EEE4714/Intro to HW Sec and Trust.md",
-    "EEL4720",
+    "CIS4930",
     "Welcome.md",
     "EEE4714"
   ]
