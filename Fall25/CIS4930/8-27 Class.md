@@ -10,7 +10,7 @@
 			* Wired or wireless connection to the internet
 		* ![[Pasted image 20250827140535.png]]
 # Basic Topology
-* get from powerpoint later
+* ![[Pasted image 20250903011108.png]]
 * Router and Switches
 	* At home, switches are combined in to the router
 	* Switches allow for communication to the router
@@ -20,7 +20,8 @@
 	* Internal vs External IP cards within a router. Routers have both. 
 * get other slide from powerpoint with more complex topology
 * Firewall
-	* Usually integrated within a router, but can be separate. 
+	* Usually integrated within a router, but can be separate.
+* ![[Pasted image 20250903011133.png]]
 # Lingo
 * IP Address
 * Subnet Mask
@@ -31,6 +32,15 @@
 * Interface
 * Firewall
 * Port - NOT physical but digital. 25526 for minecraft. {IPv4}:25526. 80(unencrypted) or 443(encrypted) for Web Traffic
+# Ports
+* Numbers that identify, along with an IP address, which network socket to connect to on a given device
+* Common port numbers and associated services:
+	* TCP 20 and 21 - FTP
+	* TCP 22 - SSH
+	* TCP 25 - SMTP
+	* UDP 53 - DNS
+	* TCP 80 - HTTP (internet unencrypted)
+	* TCP 443 - HTTPS (internet encrypted)
 # Subnet Masks
 * ![[Pasted image 20250827142806.png]]
 * Refers to which part of the IP address refers to the network and which part refers to the devices
@@ -45,6 +55,7 @@
 	* Free and open source kernel (now referred to as an operating system)
 	* Built on Unix (unix-like)
 * Hardware->Kernel->Shell->Applications 
+* ![[Pasted image 20250903011323.png]]
 * Terminals
 	* bash, zsh, terminal emulators 
 	* "Desktop" Version (big interface)
@@ -54,6 +65,17 @@
 	* usr/bin, usr/sbin
 	* [put photo here]
 * On linux, **everything** is a file
+* Paths and Directories
+	* Absolute path starts with /
+	* Relative path starts with pwd
+	* Current directory is .
+	* Previous directory is ..
+	* cd /home/user/Desktop (absolute)
+	* cd /var/www/html (absolute)
+	* /etc/ssh/sshd_config (absolute)
+	* cd .. (previous)
+	* ./script.sh (relative and current)
+	* var/www/html (relative)
 * root vs /root vs /
 	* root = 
 	* /root = directory
@@ -61,5 +83,27 @@
 * Text Editors
 	* `nano` - simple, goated
 	* `vim` - harder but more functionality
+* Shell and Syntac
+	* *command* -**options** arguments
+	* Eg:
+		* ls
+		* cd /home/user1
+		* ls -la user1/Downloads
+		* ls -R
+* Viewing Files
+	* ls (list) --> ls -flags filepath
+	* -l (more detailed)
+	* -a (show all files and directories)
+* Creating Files
+	* touch --> touch filename
+	* touch filepath/filename
+	* nano/vim/nvim/etc filename
+* Common commands 
+	* cp (copy) - cp (source)
+	* mv (move) - mv (source)
+	* cat (concatenate) - cat (filename) 
+	* rm (remove) - rm (flags) (filepath/filename)
+	* mkdir (make directory) - mkdir (flags) (path/director_name)
+		* -p or --parent as flags for mkdir
 * Linux File Permissions
 	* 

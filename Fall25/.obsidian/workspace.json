@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "COP4600/Module 0.md",
+                "file": "CIS4930/Lab0-Notes.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Module 0"
+              "title": "Lab0-Notes"
             }
           }
         ]
@@ -169,25 +169,25 @@
       "bases:Create new base": false
     }
   },
-  "active": "46ce6669e3eec35c",
+  "active": "87e6823b2d3c36df",
   "lastOpenFiles": [
+    "CIS4930/8-27 Class.md",
+    "CIS4930/0x0 Notes.md",
+    "CIS4930/Lab0-Notes.md",
+    "Images/Pasted image 20250903011323.png",
+    "Images/Pasted image 20250903011133.png",
+    "Images/Pasted image 20250903011108.png",
+    "COP4600/Module 0.md",
     "Images/Pasted image 20250902224214.png",
     "Images/Pasted image 20250902223420.png",
     "Images/Pasted image 20250902223357.png",
     "Images/Pasted image 20250902221556.png",
     "Images/Pasted image 20250902221218.png",
     "Images/Pasted image 20250902221147.png",
-    "CIS4930/Lab0-Notes.md",
-    "COP4600/Module 0.md",
     "COP4600",
-    "CIS4930/8-27 Class.md",
     "EEE4714/Intro to Cryptography.md",
     "EEE4714/Intro to HW Sec and Trust.md",
     "Images/Pasted image 20250828164805.png",
-    "Images/Pasted image 20250828164330.png",
-    "Images/Pasted image 20250827142941.png",
-    "Images/Pasted image 20250827142806.png",
-    "Images/Pasted image 20250827140535.png",
     "Images",
     "CIS4930",
     "Welcome.md",
