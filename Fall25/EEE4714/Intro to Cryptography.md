@@ -91,4 +91,49 @@
 		- Properties of computer systems
 	- Role of ingenuity / luck
 	- **There are no rules**
-- Stopped at 1=grams for english method
+- Breakable Encryption 
+	- *Theoretically* impossible to device unbreakable cryptosystems
+	- Practical cryptosystems almost always are breakable, given adequate time and computing power
+	- The trick is to make breaking a cryptosystem hard enough for the intruder
+	- Example: Breakability of an encryption algorithm 
+		- Message with 25 characters
+			- $26^{25}$ possible decryption ~ $10^{35}$ 
+			- Only one is the right one
+			- Brute force approach to find the right one 
+			- At $10^{10}$ decryption/sec => $10^{35} / 10^{10} = 10^{25} \space \text{sec} = 10 \space \text{billion years}$ 
+			- Infeasible with current tech
+		- Be smarter -- use ingenuity
+			- Reduce $26^{25}$ to, say, $10^{15}$ decryptions to check
+			- At $10^{10}$ decryptions/sec => $10^5$ sec ~ 1 day
+- Representing Characters
+	- Letters (uppercase only) represented by numbers 0-25
+	- A -> 0, B->1, .. , Z->25
+	- basic operations on letters, make it circular. X+4=B
+- Requirement for Crypto Protocols
+	- Messages should get to destination
+	- Only the recipient should get it and see it
+	- Proof of the sender's identity
+	- Message shouldn't be corrupted in transit
+	- Message should be sent/received once
+	- Proofs that mesasge was sent/received (non-repudian)
+- Substitution Ciphers
+	- Letters of P replaced with other letters by E
+	- Caesar Cipher
+	- $c_i=E(p_i)= p_i + 3\mod26$ 
+	- Discrete
+	- Can represent as a permutation $\pi: $
+	- 3 would be represented as the "key" in this cipher
+- Attacking a Substitution Cipher
+	- Exhaustive Search:
+		- If the key space is small enough, try all possible keys until you find the right one
+		- Caesar cipher has 26 possible keys from A to Z OR 0 to 25
+	- Statistical Analysis: 
+		- Compare to so called 1-gram model of English
+			- 1-gram: Frequency map of each character in english
+		- The longer the C, the more effective statical analysis would be
+	- Example:
+		- P (plaintext) = HELLO WORLD
+		- C (ciphertext) = khoor zruog
+		- Caesar Cipher is a monoalphabetic substitution cipher (=simple substitution cipher), where one key is used and one letter substitutes the letter in P
+		- ![[Pasted image 20250904141044.png]]
+		- Statistical Attack=
