@@ -19,6 +19,6 @@
 * System hardware - acts as the "root of trust": PCB --> IC (SoC | uP)
 # Example Attack
 * Roy Zoppoth stands over a Xerox 914 copy machine, the worlds first. IT was used in soviet embassies all over the world. It was so complex that the CIA used a tiny camera designed by  Zoppoth to capture documents copied on to the machine by the soviets and retrieved them using a "xerox repairman" in front of the soviets.
-* HW Security is extremely necessary, the army and big companies require it embeded in their pcbs
+* HW Security is extremely necessary, the army and big companies require it embedded in their pcbs
 * Pentagon's "Kill Switch"
 	* 

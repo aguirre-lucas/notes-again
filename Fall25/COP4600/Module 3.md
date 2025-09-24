@@ -1,0 +1,59 @@
+# Process Synchronization
+- Two primary criteria: Safety and Liveness
+- Safety:
+	- Data and state remain constant
+	- Failure of this may result in invalid application states or corrupted data
+- Liveness
+	- All processes will eventually complete
+	- Failure may result in 
+		- Deadlock: all processes block, with each process waiting on the next, and no progress is made
+		- Starvation: at least one process waits indefinitely
+-  Approaches to Synchronization:
+	- Busy Waiting
+	- Shadow Copyies
+	- Barrier Synchronization
+	- Monitors
+	- Messaging
+	- Mutexes & Semaphores
+- Shadow Copies
+	- AKA Copy-on-write
+	- Necessary when one process is writing to a shared structure and other processes are reading
+	- Example: supposed a process that is writing gets preempted before finishing its job
+	- Steps to success:
+		- Make original date read only
+		- Make a copy of the original data
+		- Update copy with new information
+		- Change pointer to new copy
+		- Release old data once all readers are done
+- Barriers (not very much used)
+	- Require all processes to reach a specified point before they can continue
+		- ![[Pasted image 20250924020303.png]]
+- Monitors (very common)
+	- Require language support
+	- Not based on shared memory to lock
+	- Use conditional variables provided by the programming language
+	- Implementations:
+		- ![[Pasted image 20250924020437.png]]
+	- Language construct that use conditional variables that handle blocking/unblocking the critical regions. Monitors guarantee that at most one process enters the critical region at a time. Can be implicit like the Java example with `syncrhonized` keyword, or explicit such as in python calling `wait()` and `notify()`
+- Mutexes and Semaphores
+	- Shared-memory variables provided by OS as blocking-based locking mechanism
+	- Mutex (Lock - binary 0 or 1)
+		- A mutex is binary in nature, lock or unlock only
+		- One locked, only the locking thread can unlock it
+		- Mutexes are intended specifically for single-processes-at-a-time critical regions
+		- Single resource (one lock)
+	- Semaphore (Array of Locks, Counter)
+		- Operations re creation, up (increment) and down (decrement)
+		- Any thread with access to the semaphore can increment or decrement
+		- A binary semaphore is similar to a mutex, but can be unlocked by any thread
+- Semaphores: How Do They Work?
+	- Creation:
+		- Semaphores can be created with a starting count
+		- (eg) 5 tables at a restaurant: tables = resources, customers = processes
+		- Structure: down (lock) Use table to eat up (unlock)
+	- Down
+		- If count > 0, decrement and continue, otherwise block and add caller to this semaphore's queue
+		- Semaphore's Queue is a list of processes waiitng for resources (tables)
+	- Up
+		- If a queue is empty, increment count and continue, otherwise, remove and unblock first process in the queue for this semaphore
+		- NOTE: The up operation never blocks any processes
