@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "Module 3"
             }
+          },
+          {
+            "id": "71472a696ae5c643",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "aprog/M2 Notes + Topic List.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "M2 Notes + Topic List"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -169,12 +184,16 @@
       "bases:Create new base": false
     }
   },
-  "active": "87e6823b2d3c36df",
+  "active": "71472a696ae5c643",
   "lastOpenFiles": [
+    "aprog/scope.png",
+    "aprog/M2 Notes + Topic List.md",
+    "Images/Pasted image 20250926000600.png",
+    "COP4600/Module 3.md",
+    "aprog",
     "Images/Pasted image 20250924020437.png",
     "Images/Pasted image 20250924020303.png",
     "EEE4714/Intro to HW Sec and Trust.md",
-    "COP4600/Module 3.md",
     "EEE4714/Intro to Cryptography.md",
     "COP4600/Module 2.md",
     "COP4600/Module 1.md",
@@ -186,9 +205,6 @@
     "Images/Pasted image 20250917194640.png",
     "Images/Pasted image 20250917192613.png",
     "Images/Pasted image 20250917192203.png",
-    "Images/Pasted image 20250917192149.png",
-    "Images/Pasted image 20250917192006.png",
-    "Images/Pasted image 20250917184251.png",
     "COP4600/Module 0.md",
     "EEL4720/9-3 Notes.md",
     "CIS4930/Lab0-Notes.md",

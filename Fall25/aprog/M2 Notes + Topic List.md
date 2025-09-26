@@ -1,0 +1,78 @@
+# What's a computer
+- MOFSET transistors that act as switches
+- Binary 0s and 1s
+- CPU
+	- Brain
+	- Has registers
+	- Has multiple components such as: Controller, ALU, Registers, FPU
+	- Interfaces with memory like cache, ram, ssd, hdd, and such.
+	- Follows a clock cycle, measured in GHz
+# What's a program?
+- Bit is a 0 or 1
+- Byte is a group of 8 bits
+- Word is the "natural" data size
+- 8-bit systems, word is 1 byte, 16-bit systems, word is 2 bytes, so on and so forth. 
+- Nibble - 4 bits
+- D-Word, aka two words
+- Q-word, aka four words
+- Programs
+	- Machine code, have instructions and operands
+	- Translated from assembly language (.s or .asm dependent on system)
+	- Compiled languages like C++, C, Rust, Go, Zig, etc have simple syntax and compiled long before execution
+	- Just-in-Time Compiled Languages like Java and C# are system agnostic and on runtime converts the instructions to the native languages, just before execution
+	- Interpreted languages like JS and Python take a script and convert the language into instruction during execution, aka at runtime
+- Summarizer on this page does it justice
+# Basic C++ Compiler Info
+- \#include
+	- preprocessor directive, done before compilation
+- g++ command basics
+	- g++ - the compiler
+	- Wall: explains all warnings
+	- Werror: treats all warnings as errors
+	- std=c++20: obvious, the c++ standard we're using
+	- -o \<name\>: output file name, aka the executable's name
+	- \*.cpp: source files to be compiled
+# Primitive Data Types
+- `bool` - true or false, 1 or 0, George Boole. Most `null` states decay to a false boolean
+- `char`- characters. 8 bits wide typically for ASCII and other char encodings. use single quotes
+- `unsigned` - declarator before an integer type to signify it cannot be negative, aka unsigned. Treats all values as positive (MSB being 1 means positive value, not negative)
+- `short` - at least 2 bytes, an integer but smaller
+- `int` - integer, at least 4 bytes
+- `long`- integer, generally 8 bytes, but on windows it's 4, super cringe
+- Stander integer sizes that say what they are
+	- `int8_t/uint8_t` - 8 bit integer/unsigned integer
+	- Goes on to 64 bits
+- Amount of bytes and if unsigned determines range of ints
+- Table here is good, go look at that, and watch the video too
+- \<climits\> library has the MAX values and changes depending on which system compiles it. super chill
+- No `UCHAR_MIN` and such cuz it's just zero lol
+- Floating Points! Awesome!
+- For the purpose of the class, just know that computers and floating point values aren't always precise
+- `float` and `double` are floating point types in C++
+- `float` is "smaller" and has less precision compared to the `double` that has `double` the precision
+# Type Casting
+- static_cast\<type\>(var)
+- Either Narrows or Broadens the type when going from one to the other.
+- long --> int, narrow; bool-->long long broadening
+- don't use C-style casting cuz it's ambiguous and static_cast can give errors
+- casting a boolean will always just be 0 or 1, but broader
+# Literals and Suffixes
+- "Hello World" is a `char[]` literal
+- Table of literals is good here, read those
+- Suffix table explains it well too
+- 1.0f means float, 1.0 means double
+- 1 mean int, 1L means long, 1u means unsigned int, 1uL means unsigned long, 1Lu is also unsigned long, case/positon doesn't matter for deifning an unsigned long/long long
+- "Hello World"s is a `std::string` literal
+- other ones exist off my head but not in the module like R"hi" is a raw string, L"text"s is a wstring
+# Variable Declaration and "The Stack"
+- C++ is statically typed, so once defined, it can't change. also, it always needs a name
+- Always initialize ur variables
+- Scope
+	- I did a powerpoint on this lol, simple one but yea
+	- Global Scope $\epsilon$ Local Scope $\epsilon$ Block Scope. The examples given show that well
+	- Also exists the Class Scope, which is that all classes and instances of the same class can "see" into each other, i.e. share a scope
+	- Namespace scope pretty similar to classes, but yea
+	- Super rough drawing i did, but this:!![[scope.png]]
+- Stack
+	- Stored on RAM
+	- 
