@@ -58,10 +58,10 @@
 	- Can use priority-based scheduling
 	- Can be preemptive or non-preemptive
 	- Turn Around Time - Time from Finish to Arrival
-	- Mean Turn ARoundTime (MTT) - Average TT (all jobs)
+	- Mean Turn Around Time (MTT) - Average TT (all jobs)
 - Non-Preemptive Algorithms
-	- Avoid most context switch costs and repsonse time from user interaction is not a priority
-	- First-Cone First-Serve (FCFS): Jobs run in order of arrival
+	- Avoid most context switch costs and response time from user interaction is not a priority
+	- First-Come First-Serve (FCFS): Jobs run in order of arrival
 	- Shortest Job First (SJF): Job that will finish first will run first
 	- Priority: Job with highest priority is executed first
 	- Optimal (Crystal Ball): Uses future knowledge of arrivals for optimization (theoretical - base for comparison)
@@ -109,7 +109,7 @@
 ## Shortest Remaining Time First (SRTF)
 - Preemptive
 - ![[Pasted image 20251001001952.png]]
-- Among preemptive algorithms, DRTF is optimal IF there's no context switch cost
+- Among preemptive algorithms, SRTF is optimal IF there's no context switch cost
 ## Round Robin
 - Preemptive, basically a circular queue where each process runs for a some quanta of time
 - ![[Pasted image 20251001002135.png]]

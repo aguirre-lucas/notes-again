@@ -29,6 +29,24 @@
 	* Increasing threat to hardware due to globalization
 	* Extremely difficult to detect kill switches as well as intentional backdoors, which may have huge consequences
 	* Example: the syrian radar's being jammed
+* Fake Cisco routers risk "IT subversion"
+	* An international FBI presentation states that counterfeit Cisco routers from China may cause unexpected failures in American networks. The equipment could also leave secure systems open to attack through hidden backdoors.
+	* $76M to fake Cisco routers
+* Energy Theft Going From Bad To Worse
+	* Tampering with "smart" meters in Oil, electricity, and gas led to a $1B loss in CT because of electricity threat
+* Medical Device Security
+	* Incorporating security devices is sometimes considered expensive
+	* Implantable devices like a heart rate monitor
+		* Incorporating security could potentially reduce the life-time of the device by 30%
+		* Attack these devices could cause loss of life
+* Physical Attacks on Chip IDs
+	* Extracting secret keys
+* Side-Channel Attacks
+	* Power Analysis, timing analysis, EM analysis
+* Tampering with Electronic Devices
+	* captured drone in iran
+* Counterfeit ICs
+	* multi-billion dollar business
 	* 
 # Motivation for Hardware Security
 - HW Security is becoming increasingly more important
@@ -39,3 +57,5 @@
 	- Army requires security hardware for all PCs
 # Rise of Clones
 - Genuine vs Counterfeit products that contain hardware security vulnerabilities for consumers. 
+# The landscape of Security in Modern Computing Systems
+![[Pasted image 20251001130926.png]]
