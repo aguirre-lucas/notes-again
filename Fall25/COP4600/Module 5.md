@@ -113,4 +113,68 @@
 	- The process is provided by the OS with a virtual address space broken into pages or segments (64bit systems, only pages)
 	- A running process generates virtual addresses
 	- The OS translates virtual addresses into physical addresses, swapping pages or segments as needed
+- Paging
+	- Page sizes are fixed and are the unit of allocation to processes (typically 4K)
+	- This may generate internal fragmentation, but no external fragmentation
+- Paging Systems
+	- OS & Hardware support
+	- In modern systems, the CPU uses a memory management unit MMU to convert virtual addresses into physical ones quickly.
+	- ![[Pasted image 20251010164344.png]]
+	- Historically, the MMU was a separate chip, but in modern systems it is integrated into the same die as the CPU
+	- Memory Mapping
+		- A **page table** is used to map virtual addresses to physical addresses
+		- ![[Pasted image 20251010164426.png]]
+		- ![[Pasted image 20251010164439.png]]
+	- MMU Operation
+		- The MMU converts the virtual page number to a physical one (keeping the offset)
+		- 0x931A --> 1001 001100011010
+		- ![[Pasted image 20251010164717.png]]
+	- Page Tables
+		-   ![[Pasted image 20251010164931.png]]
+		- Some pages are in the cache
+			- cache okay = 1 and present = 1
+		- Some pages are in main memory but not cache
+			- cache ok = 0 and present = 1
+		- Some pages are on the disk
+			- cache ok = 0 and present = 0
+		- Page Table challenges
+			- Quick access is essential, so common entries are cached
+			- The table can get large
+			- Solution: Page the table
+		- ![[Pasted image 20251010165111.png]]
+		- ![[Pasted image 20251010165214.png]]
+- Caching
+	- Cache Types
+		- Instruction cache - Contains frequently used memory lines of text segments of a program
+		- Data cache - contains frequently used lines of data and stack segments
+		- Translation Lookaside Buffer (TLB) - Popular page table entries (subset of the page table for speed)
+	- Cache Features
+		- TLB usually contains 16 to 512 page table entries and may use associative (content-addressable) memory
+	- There are issues
+		- What is the cache line size?
+			- How much data in cache may impact hit rate
+		- Cache Replacement Policy
+			- Which line to replace when miss and cache full?
+			- Mostly dealt with by hardware
+		- Cache Consistency
+			- Write-through - write to cache and write to memory
+			- Write-back - copy to memory when removing from cache - lazy writes
+			- Access by other CPU, peripheral - coherence
+- Paging Systems
+	- TLB - ![[Pasted image 20251010165939.png]]
+	- Page Tables
+		- All addresses conversions must come from the TLB
+		- Some pages are only in main memory
+		- Some pages are only on disk
+		- Some pages are in cache and memory
+		- ![[Pasted image 20251010170016.png]]
+- Really big page tables
+	- 64-bit address space: 16 EiB of virtual memory space
+	- With 4KB pages, how many entries in page table?
+	- 4TB just to store page entries, which is a whole lot of them
+- Process Virtual Address Space
+	- Especially in 64-bit mode, some OSs allocate virtual address spaces by process
+	- ![[Pasted image 20251010170316.png]]
+- Multilevel Page Tables
+	- ![[Pasted image 20251010170340.png]]
 	- 
