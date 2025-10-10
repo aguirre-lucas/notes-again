@@ -85,4 +85,94 @@
 	- Initializing, Exiting
 		- Preparing process to run, shutting down
 	- ![[Pasted image 20251010115548.png]]
-	- 
+- Context Switching
+	- Switching between two processes
+	- Context switches can occur because of:
+		- Blocking operations (I/O, voluntary)
+		- CPU Yield Operations (Sleep, don't run now) (Voluntary)
+		- CPU Sharing (Time has expired, or more important process to run), psuedoparalleism (Involuntary)
+		- Asynchronous Events (involuntary) like hardware interrupts, signals, and exceptions
+	- In this case, the OS must:
+		- Store register values
+		- Track memory addresses
+		- Update process state if necessary
+- Handling Signals
+	- Kernel receives signal via syscall
+		- Syscall flags that process in PCB, indicating there is a signal pending
+		- When the time comes for the process to run, instead of running, the signal is dealt with
+	- If PCB has registered handler for the target, the signal is stored and the handler is queued to execute
+	- If there is no registered handler, the target process is terminated
+	- Once handler/termination completes, normal function continues
+	- If a process receives a signal and a handler is registered to catch the signal, that handler is executed, otherwise the process is terminated
+	- Signals:![[Pasted image 20251010140703.png]]
+# Introduction to Threads
+- What is a Thread, Anyway?
+	- Single-Threaded Process:
+		- ![[Pasted image 20251010140849.png]]
+	- Multithreaded Process:
+		- ![[Pasted image 20251010140910.png]]
+	- Sometimes called a "lightweight process"
+	- A thread of execution is a part of a process that:
+		- Has it's own execution history:
+			- Program counter
+			- Stack
+		- What about data, text, heap?
+	- Elements that are unique to a process, but not a thread include:
+		- Text
+		- Data 
+		- Heap
+- What is in a thread?
+	- ![[Pasted image 20251010141048.png]]
+- Okay.. but why?
+	- We use threads to:
+		- Avoid wasting memory with repeated information
+		- Break up complicated tasks into simpler ones
+		- Improve efficiency
+	- Lower memory costs: shared segments
+	- Information sharing: through shared data
+	- Reduced creation/destruction times: allocating/copying
+	- Reduce context switch time: another thread in the same process only
+- User-Space and Kernel-Space Threads
+	- ![[Pasted image 20251010141623.png]]
+- Hybrid Threading
+	- We can mix user and kernel threads to try to get the beset of both
+	- ![[Pasted image 20251010141709.png]]
+	- This type of implementation is quite complex, so it's best used if an optimization is necessary
+- Dangers of Threads
+	- It is easy to make mistakes when using threads:
+		- Corrupt data state
+		- Race conditions
+		- Lost data
+		- Duplicated data
+- Inter-Process Communication
+	- Communication: it ruins everything
+		- The process model isolates processes, but sometimes we need them to talk anyway
+		- Coordination of actions, transmission of data, notification of event, updating status
+	- The process model isolates processes, but sometimes we need them to talk anyway
+	- Shared memory:
+		- Directly reading and writing to memory
+		- Requires a shared space
+		- Caching and consistency issues
+		- Requires explicit synchronization
+	- Message passing
+		- Library or OS support needed
+		- System handles synchronization
+		- Avoiding memory specific problems
+- Message Passing Systems
+	- message passing systems accept data parcels and deliver them between processes
+	- Two common approaches are pipes (local only) and network sockets (between hosts)
+	- Pipes:
+		- communicate information between two processes on the same system, handled by the kernel, usually a file-based transaction
+	- Network Sockets
+		- Similar to pipes, but information can be exchanged between the same host or different hosts
+	- Message passing systems require a communications protocol
+	- User Space --> Messaging System --> Receiver
+	- Messaging systems require careful communications protocol design:
+		- Connecting to and addressing recipients
+		- Formatting and encoding of information
+		- Data buffering and flow control
+		- Message delivery and ordering
+		- Synchronization
+- Race Conditions
+	- An undesirable situation that occurs when a process or thread attempts to perform two or more operations at the same time, but because of the nature of the task, the operations must be done in the proper sequence to be done correctly. Usually happens to the same memory, common in multi-threaded applications
+- 
