@@ -1,1 +1,88 @@
 # Intro to Processes
+- OS layers and architecture
+	- ![[Pasted image 20251010112014.png]]
+	- In microkernel, only the most core functionalities of the OS are kept in kernel space, almost everything is done in user space. 
+	- Modules communicate via message passing and most of the operationds don't require much syscalls 
+	- Due to it's structure, you don't have to recompile the entire OS when making changes.
+	- In monolothic kernel, the OS is just one large piece of software. All modules of the OS exist in kernel space and execute in kernel space
+	- Because of this, many syscalls 
+	- Typical everyday OS use Monolithic kernels
+- What's a Process?
+	- A process is neither the executable nor the algorithm, both are static
+	- A process is a program in execution
+	- Process = Program + State; pointers, counters, variables
+- The Process Model
+	- Conceptually, what does the process module require?
+	1. Unique program counter: at least one thread of execution (memory space, stack, program pointer)
+	2. Independence of Execution: a process does not depend on any other processes executing. What it executes is independent of any other values, unless there is explicit communication
+	- Maintenance of this model is done by the OS, "each process exists in its own little world." 
+- Psuedoparallelism
+	- Imitates parallel execution on a single processor
+	- Each process uses the CPU by taking turns
+	- Processes run for fractions of a second (quantum)
+	- They finish and give control back to the CPU, or they are preempted (removed from the CPU before the end of the quantum)
+	- ![[Pasted image 20251010112755.png]]
+	- CPU Registers hold the state of a process while running
+	- After each quantum of time, the OS swaps processes
+		- The OS suspends the execution of the current process and saves its states
+		- Next, it loads the CPU registers with the states of the next process to execute and runs the new process
+	- Where are the process states stored when the process is "swapped"?
+		- Stored in memory, RAM or fixed storage
+		- Quite small, but can run out of space
+- Creation and Termination
+	- Processes are created by:
+		- System initialization, init
+		- Process request, fork
+			- User request
+			- Batch job
+	- Process are terminated via:
+		- Normal exit, voluntary
+		- Abnormal exit, voluntary
+			- tries to get file that doesn't exist
+		- Fatal error, involuntary
+			- Divide by zeri
+		- Signaling / kill via process, involuntary
+			- Software signal coming from another process kills the process
+- What's in a Process?
+	- Info about process stored in the Process Control Block (PCB)
+	1. Process Management
+		- Process table
+		- Register values
+	2. Memory Management 
+		- Text Ptr
+		- Data ptr
+		- Heap ptr
+		- Stack ptr
+	3. File Management
+		- Files
+		- Pipelines
+		- Devices
+- Process: Memory Concept
+	- ![[Pasted image 20251010114301.png]]
+
+# Introduction to the Scheduler
+- The Scheduler
+	- Part of the OS that handles process scheduling
+		- Complex, different algorithms
+	- The scheduler decides which process gets run (and when)
+		- Not necessarily FIFO from the process table
+	- The scheduler is ready to respond after interrupts (I/O, etc)
+		- It has to know where to stop, where to restart
+	- Balances needs of processes to avoid problems (i.e. starvation)
+- Who Schedules the Scheduler
+	- The OS enters kernel mode
+	- The old process is removed and stored in memory
+	- A new process is loaded
+	- The OS switches back to user mode, and the process runs
+	- The scheduler sets an alarm, for precisely a quantum of time
+	- When the alarm goes off, the OS interrupts the running process and the scheduler is execute
+	- The cycle repeats itself
+- Process States
+	- Running, Ready, Blocked
+		- executing instructions, runnable, waiting on external event (has yielded the CPU)
+	- Swapped Out & Blocked, Swapped Out & Ready
+		- NOT in RAM, waiting on external event/ready to execute
+	- Initializing, Exiting
+		- Preparing process to run, shutting down
+	- ![[Pasted image 20251010115548.png]]
+	- 
