@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Spring26/EEL6395 - RC2/Notes.md",
+                "file": "Spring26/EEL6395 - RC2/1-12 Notes.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Notes"
+              "title": "1-12 Notes"
             }
           },
           {
@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Spring26/EEL6395 - RC2/Notes.md",
+                "file": "Spring26/EEL4930 - SoC/1-14 Lecture.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Notes"
+              "title": "1-14 Lecture"
             }
           }
         ],
@@ -195,11 +195,25 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "22e80a43a1593ffa",
+  "active": "e416f0d566330b34",
   "lastOpenFiles": [
-    "Spring26/EEL6395 - RC2",
+    "Spring26/EEL4930 - SoC/Images/Pasted image 20260116015940.png",
+    "Spring26/EEL4930 - SoC/Images/Pasted image 20260116015554.png",
+    "Spring26/EEL4930 - SoC/Images/Pasted image 20260116014600.png",
+    "Spring26/EEL4930 - SoC/Images/Pasted image 20260116014449.png",
+    "Spring26/EEL4930 - SoC/Images/Pasted image 20260116014434.png",
+    "Spring26/EEL4930 - SoC/Images/Pasted image 20260116013951.png",
+    "Spring26/EEL4930 - SoC/Images/Pasted image 20260116013712.png",
+    "Spring26/EEL4930 - SoC/Images",
+    "Spring26/EEL4930 - SoC/Images/Pasted image 20260116013337.png",
+    "Spring26/EEL6395 - RC2/1-12 Notes.md",
+    "Spring26/EEL4930 - SoC/1-14 Lecture.md",
     "Fall25/EEE4714/Final Exam Notes.md",
-    "Spring26/EEL6395 - RC2/Notes.md",
+    "Spring26/EEL4930 - SoC",
+    "Fall25/Images/Pasted image 20250924095740.png",
+    "Fall25/Images/Pasted image 20250924095057.png",
+    "Fall25/Images/Pasted image 20250924094906.png",
+    "Spring26/EEL6395 - RC2",
     "Spring26"
   ]
 }
