@@ -1,0 +1,527 @@
+# Parallelism
+- Microprocessors are slow
+	- Sequential
+	- Von Neumann architecture
+	- "Stored-program" memory
+	- Fetch, Decode, Execute, Store, Repeat
+	- Sequential is one at a time
+	- Bottlenecked by bandwidth of memory
+	- How to improve? Very Long Instruction Words, Superscalar's, however still bottlenecks!
+- Reonfigurability
+	- Exploits parallelism
+	- VLIW only gets max 5 instructions percycle
+	- RC gets thousands
+- Types of Parallelism
+	- Arithmetic-level Parallelism ("wide" parallelism)![[Pasted image 20251202222842.png]]
+	- Pipelined Parallelism (""deep" parallelism)![[Pasted image 20251202222938.png]]
+	- Task-Level Parallelism, like mpeg-2, where each box is a task that all execute in parallel. EAch task may have bit-levelm widem and deep parallelism![[Pasted image 20251202223026.png]]
+- How to exploit parallelism
+	- Identify high level tasks
+	- create circuit for each task and communicate between tasks with buffers
+	- How to create circuit? **pipelines and systolic arrays**
+- Systolic Arrays
+	- Systolic means in rhythm with the heart
+	- We want arch that pumps data through efficiently
+	- Data flows from memory in a rhythmic fashion, passing through many processing elements before it returns to memory
+	- General Idea: fully pipelined circuit with I/O at top and bottom level
+	- ![[Pasted image 20251202223648.png]]
+- Pipelining
+	- ![[Pasted image 20251202223702.png]]
+	- Add pipelines to each level of the DFG![[Pasted image 20251202223722.png]]
+	- Allocate one resource (adder, ALU, etc) for each operation in DFG![[Pasted image 20251202223806.png]]
+	- ![[Pasted image 20251202223815.png]]
+	- ![[Pasted image 20251202223820.png]]
+	- ![[Pasted image 20251202223826.png]]
+	- 4 clock cycles for first result, then 1 cycle for every other result
+	- Total cycles: 4+99=103
+	- Assume our uP has 10 instructions per body loop, a CPI of 1.5, and a clock 10x faster than FPGA
+	- Total SW cycles: 100\*10\*1.5=1,500 cycles
+	- RC Speedup: (1500/103) * (1/10) = **1.46x**
+	- If the uP clock was even faster, the RC becomes slower, but!
+		- RC uses less power, and may be cheaper, so that matters
+- Simple Pipelining example
+	- We can improve by saying hey, why not do multiple iterations at the same time?
+	- Let's compute a[i] and a[i+1] at the same time
+	- No data dependencies between iterations![[Pasted image 20251202224202.png]]
+	- Go from this![[Pasted image 20251202224234.png]]
+	- To this!![[Pasted image 20251202224244.png]]Note that it requires 6 more registers for each unrolled iteration. This is important. BUT, now we can bring in 4 inputs per cycle!!
+	- Assuming each element in the array is 8-bits, we're limited only by memory bandwidth.
+	- If the memory has a bandwidth of 64bits/cycle, we can do 6 iterations in parallel!
+	- This would give us a new performance of about 20 cycles for the entire for-loop, a 5x speedup from the 3GHz uP !!
+- Importance of Memory Bandwidth
+	- Performance of hardware is often limited by memory bandwidth.
+	- More bandwith --> more unrolling --> more parallelism --> BIG SPEEDUPS!!
+	- In our last example, instead of 64bits, we had 128 bits/cycle, now there's a speedup of 9.1x !!
+- Don't forget your delay registers
+	- You can mess up the pipeline timing without them!![[Pasted image 20251202225729.png]]
+	- ![[Pasted image 20251202225752.png]]Not good
+	- I did this assuming the 5 is a constant that's brought in from memory, and not a value printed in hardware:![[Pasted image 20251202231402.png]]![[Pasted image 20251202231436.png]]
+	- It takes 6 cycles for first three results, then 997/3 is 333, so 339 cycles for the entire loop. 
+	- 1000 iterations * 15 instructions per iteration \* 1.5 cycles per instruction = 22500 cycles
+	- 22500 SW cycles / 339 RC cycles * 1 / 15 = **4.4x speedup**!
+	- Now what is the divider took 20 cycles?
+		- Now, instead of 6 cycles, it'll take 25 cycles for first three outputs. then 997/3 is 333, so 333+25=358
+		- 22500 / 358 * (1/15) = **4.1899x** speedup!
+		- Didn't matter, we're still faster
+	- In pipelines, performance **usually** dominated by throughput, not latency
+- Dealing with Dependencies
+	- Notice how in my solution i made b[i+2] and b[i+3] add each other? I reduced the height of the tree
+	- This is good practice, cuz if we had to wait a lot for operations, that doesn't take advantage of ![[Pasted image 20251202233654.png]]
+	- Now say we have two different input arrays, we can't exdcute until the first iteration is complete, this limited *arithmetic* parallelism increases latency![[Pasted image 20251202234039.png]]
+	- So instead, we just continue building the tree down!![[Pasted image 20251202234113.png]]
+	- ANother issue is `if statements`. How can we deal with if statements? If only there was a hardware rtl module that can change output depending on input![[Pasted image 20251202234248.png]]
+	- MUXS!!![[Pasted image 20251202234303.png]]
+	- ![[Pasted image 20251202234440.png]]Output bandwidth is also an issue, say we have 4 output and 1 input and each output is 32-bits. If our total output bandwidth is 128-bits, and our memory bus can only handle 128-bits, then we can't unroll anymore even though we have only used 32-bnits of the 128-bit input memory bus
+	- Pipelining also isn't always useful, especially for small data streams![[Pasted image 20251202234515.png]]
+	- This just wastes pipelining cuz the overhead is large and the data is small. Parallelism needs to be outweighed on large data streams, i.e. large amounts of repeated computation.
+- Other Challenges
+	- Values are "peak" values because they're stored sequentially
+	- These numbers can only be achieved with sequential data, which data normally is not sequential, 
+	- 2-D arrays break this sequential memory access![[Pasted image 20251203003337.png]]
+	- Multiple array inputs also break this sequential memory access![[Pasted image 20251203003944.png]]
+	- b[] and c[] are stored in different locations, so memory access has t ojump back and forth
+	- Possible solutions:
+		- use multiple memories, or multiported memory (expensive)
+		- Interleave data from b[] and c[] in memory (programming effort). If no compiler support requires manual rewrite
+	- runtime issues.... Obviously not sequential![[Pasted image 20251203004404.png]]
+	- possible solution: PhD Thesis lol.
+	- Pointer-based data structures, like everything!
+	- Even if scanning through list, data could be all over memory, this can cause aliasing issues. 
+	- Pointers are chill if it's an array though
+	- ![[Pasted image 20251203004537.png]]
+	- try to avoid pointer-based data structures if possible in hardware
+	- Not having all the code in one loop
+	- **Pipelines are extremely fast, but only certain types of code are amenable to pipelining.**
+	- What can we do instead?
+		- FSMD maybe, but less parallelism
+	- In this example, we can only bring in 2 things per register, we can bend the rules and potentially pipeline it![[Pasted image 20251203005736.png]]
+	- We can only get an output every 2 cycles though, cuz of the junk data
+	- None of the solutions above though account for **variability of bandwidth**
+# High Level Synthesis
+- Meat and bones of this exam
+- Existing FPGA tool flow
+	- RTL synthesis
+		- muxes, registers
+		- Allwos precise specification
+		- Time consuming ,difficult, error prone
+		- ![[Pasted image 20251203010050.png]]
+- Like C to Assembly, what if we had something similar?
+- High Level Synthesis
+	- Wouldn't it be nice to write high-level code?
+	- Easier to specify, separates function from architecture, so more portable
+	- Hardware will potentially be slower, but we've seen this before in assembly programming vs C programming
+	- Would be very hardd though, since cmopilation maps behavior into assembly instructions, but HLS would need to create custom architecture to execute behavior
+	- There's a huge hardware exploration space, and best solutions may include microprocessors. Plus, HLS is supposed to be generalized for any high-level code, so not all code can be appropriate for any hardware
+	- Consider how to manually convert high level code to circuit
+		- ![[Pasted image 20251203010336.png]]
+		- You gotta build an FSM for the controller
+		- You gotta build a datapath based on that fsm
+		- Now we have an FSM like this ![[Pasted image 20251203010402.png]]
+		- And an associated datapath like this![[Pasted image 20251203010415.png]]
+		- Tie it to memory![[Pasted image 20251203010435.png]]
+		- Generalize it so it can have standard I/O![[Pasted image 20251203010454.png]]
+		- Add control signals![[Pasted image 20251203010503.png]]
+		- Now combine the controller and datapath![[Pasted image 20251203010514.png]]
+		- Alternatively, you can build the entire thing with one adder and some muxes![[Pasted image 20251203010718.png]]
+- Comparison with HLS 
+	-  Determining when to perform an operation - Scheduling
+	- Allocating resources for each operation - Resource allocation
+	- Mapping operations onto resources - Binding
+	- We want High-level Code --> HLS --> Custom Circuit in HDL/Bitstream
+	- Steps to do that
+		- Write high level code
+		- Syntactic Analysis converts code to intermediate representation, allowing all following steps to use language independent format
+		- Intermediate Representation from Syntactic Analysis
+		- Optimization
+		- Scheduling/Resource Allocation - Determines when each operation will execute, and resources used
+		- Binding/Resource Sharing - maps operations onto physical resources
+		- Controller + Datapath
+- Sytactic Analysis
+	- Analysis of code to verify syntactic correctness
+	- How? Lexical analysis and Parsing
+- Lexical Analysis
+	- lexing breaks code into series of tokens
+	- tokens are defined language constructs
+	- ![[Pasted image 20251203013000.png]]
+	- Definie tokens using regex, and maybe some C code
+	- ![[Pasted image 20251203013034.png]]
+- Parsing
+	- Analysis of token sequence to determine correct grammatical structure
+	- Languages defined by context-free grammar
+	- ![[Pasted image 20251203013102.png]]
+- Parsing Tools
+	- Define grammar in special language
+	- Automatically creates parser based on grammar
+	- A popular tool is "yacc" - yet-another-compiler-compiler![[Pasted image 20251203013148.png]]
+- Intermediate Representation
+	- Parser converts token to intermediate representation, like a syntax tree
+	- ![[Pasted image 20251203013209.png]]
+	- I assume it does a preorder traversal to get everything written correctly
+	- Why do this though?
+		- Easier to analyze and optimize code in a tree structure, plus it's language agnostic
+	- Types of intermediate representation
+		- Abstract syntax tree
+		- control/data flow graph
+		- sequencing graph
+	- We focus on CDFG as it combines control flow and data flow graphs
+- Control Flow Graphs
+	- Represent control flow dependencies of basic blocks
+	- Basic blocks are sections of code that always executed from beginning to end, so no jumps
+- Data Flow Graphs
+	- Represent data dependencies between operations![[Pasted image 20251203022822.png]]
+- Control/Data Flow Graphs
+	- Combo of both![[Pasted image 20251203022848.png]]
+- Optimization
+	- After creating CDFG, HLS optimizes it
+	- Goals
+		- Reduce area
+		- Improve latency
+		- increase parallelism 
+		- Reduce power/energy
+	- Two types: data flow and control flow optimizations
+- Data Flow Optimizations
+	- Tree-height reductions
+		- same as in pipelining, take advantage of commutativity, associativity, and distributivity![[Pasted image 20251203023014.png]]
+	- Operator Strength Reduction
+		- Replacing an expensive operation with a faster/smaller one
+		- Multiplying/Dividing with shifts
+		- ![[Pasted image 20251203023041.png]]
+		- c = 4b, d = 8b, so it works
+	- Constant propogation
+		- Statically evaluate expressions with constants (aka constexpr if we're being honest)![[Pasted image 20251203023146.png]]
+	- Function Specialization
+		- Create specialized code for common inputs
+			- Treat common inputs as constants
+			- If inputs are not known statically, must include if statement for each call to specialized function![[Pasted image 20251203023241.png]]
+	- Common sub-expression elimination
+		- If expression appears more than once, repetitions can be replaced![[Pasted image 20251203023309.png]]
+	- Dead code elimination
+		- Remove code that is never executed. This may sound redundant but often comes from constant propagation or function specialization![[Pasted image 20251203023346.png]]
+	- Code motion (hoisting/sinking)
+		- Avoid repeated computation![[Pasted image 20251203023404.png]]
+- Control Flow Optimizations
+	- Loop unrolling
+		- Replicate body of loop, may increase parallelism:![[Pasted image 20251203023430.png]]
+	- Function Inlining
+		- Replace function call with body of function
+			- Common in both HW and SW. in HW it eliminates unnecessary control states, and in SW it eliminates function call instructions
+		- ![[Pasted image 20251203023459.png]]
+	-  Conditional Expansion
+		- Replace if with logic expression. Removes if/else bodies in parallel. ASsume `a` is 0 or 1 and there's some optimizations to be made.![[Pasted image 20251203032018.png]]
+- Scheduling/Resource Allocation
+	- Scheduling assigns a start time to each operation in DFG
+		- Start times must not violate dependencies in DFG
+		- Start times must meet performance constraints (sometimes resource ones)
+	- Performed on the DFG of each CFG node
+		- Can't execute multiple CFG nodes in parallel
+	- ![[Pasted image 20251203032417.png]]
+	- Several types of problems
+		- Usually some combo of performance and resource constraints
+	- Problems:
+		- unconstrained
+			- not very useful, every schedule is valid
+		- Minimum latency
+		- Latency constrained
+		- Minimum-latency, resource constrained
+			- i.e. find the schedule with shortest latency that uses least resources of a specified amount. NP complete
+		- Minimum-resource, latency constraint
+			- i.e. find the schedule that meets latency constraint and uses the minimum number of resources. NP Complete
+	- Minimum Latency Scheduling
+		- ASAP algorithm
+			- Find a candidate node
+				- Candidate is a node whose predecessors have been scheduled and completed
+			- Schedule node one cycle later than max cycle of predecessor
+			- Repeat until all nodes scheduled
+			- ![[Pasted image 20251203032656.png]]
+		- As Late As Possible (ALAP) algorithm
+			- Run ASAP, get minimum latency L
+			- Find a candidate
+			- Schedule node one cycle *before min* cycle of successor
+				- Nodes with no successor scheduled to cycle L
+			- Repeat until all nodes scheduled
+			- ![[Pasted image 20251203032824.png]]
+			- Has to run ASAP first, seems pointless
+			- But, many heuristics need the mobility/slack of each operation
+				- ASAP gives earliest possible time for an operation, while ALAP gives latest possible time  for an operation
+			- Slack = difference between earliest and latest possible schedule
+				- Slack = 0 implies operation has to be done in current scheduled cycle
+				- The larger the slack, the more options a heuristic has to schedule the operation
+	- Latency-Constrained Scheduling
+		- Instead of finding minimum latency, find latency less than L
+			- Use ASAP to verify that min latency less than L
+			- Use ALAP starting with L instead of min latency (don't need ASAP)
+	- Scheduling with Resource Constraints
+		- ![[Pasted image 20251203033139.png]]
+		- ![[Pasted image 20251203033147.png]]
+	- Minimum-Latency, Resource-Constrained Scheduling
+		- Given resource constraints, find schedule that has the minimum latency
+		- ![[Pasted image 20251203033238.png]]
+		- Hu's Algorithm
+				- Assumes one type of resource
+			- Basic Idea
+				- Input graph, # of resources r
+				1. Label each node by max distance from output
+				2. Determine C, the set of scheduling candidates
+				3. From C, schedule up to r nodes to current cycle, using label as priority
+				4. Increment current cycle, repeat from 2 until all nodes are scheduled
+			- Example:
+				- ![[Pasted image 20251203033358.png]]
+				- ![[Pasted image 20251203033405.png]]
+				- ![[Pasted image 20251203033420.png]]
+				- ![[Pasted image 20251203033427.png]]
+				- ![[Pasted image 20251203033437.png]]
+			- Common extensions:
+				- Multiple resource types
+				- Multi-cycle operation
+		- List Scheduling
+			- minimum latency, resource constrained version
+			- Extension for multiple resource types
+			- Basic idea - Hu's algorithm for each resource type
+				- Input a graph and set of contraints R for each resource type
+				1. Label nodes based on max distance to output
+				2. For each resource type t
+					1. Determine candidate nodes C
+					2. Schedule up to $R_t$ operations from C based on priority, current to cycle
+					3. Increment cycle, repeat from 2 until all nodes scheduled
+				- Not shown, but labeled by max distance to output![[Pasted image 20251203033747.png]]
+				- ![[Pasted image 20251203033756.png]]
+				- ![[Pasted image 20251203033835.png]]
+				- ![[Pasted image 20251203033840.png]]
+				- Then 7 and 8 get scheduled for cycles 3 and 4
+				- ASAP would've required more resources!![[Pasted image 20251203033917.png]]
+			- Extension for multicycle operations
+			-  Input a graph and set of contraints R for each resource type
+				1. Label nodes based on max **cycle latency** to output
+				2. For each resource type t
+					1. Determine candidate nodes C, where candidates could be completed predecessors too
+					2. Schedule up to $(R_t-n_t)$ operations from C based on priority, current to cycle
+						1. $R_t$ is the constraint on resource type t
+						2. $n_t$ is the number of resources t in use from previous cycles
+					3. Repeat from 2 until all nodes scheduled
+				- Would end up looking like this![[Pasted image 20251203034231.png]]
+			- My Turn
+			- ![[Pasted image 20251203035156.png]]
+			- ![[Pasted image 20251203035144.png]]
+			- ![[Pasted image 20251203035217.png]]
+			- ![[Pasted image 20251203041956.png]]
+	- Minimum Resource, Latency Constrained
+		- Note that if no resource constraints are given, the schedule determines the number of required resources
+		- ![[Pasted image 20251203043619.png]]
+		- Minimum Resource, Latency Constrained Scheduling - for all schedules that have latency less than the constraint, find the one that uses the fewest resources![[Pasted image 20251203043652.png]]
+		- List Scheduling (minimum resource version)
+			1. Compute latest start times for each op using ALAP with specified latency constraint, including multicycle operations
+			2. For each resource type
+				1. Determine candidate nodes
+				2. Compute slack for each candidate (slack = latest possible cycle - current cycle)
+				3. Schedule operations with 0 slack, updating required number of resources (assume 1 of each to start with)
+				4. Schedule operations that require no extra resources
+			3. Repeat from 2 until all nodes scheduled
+			- Example: 1) Find ALAP Schedule![[Pasted image 20251203043939.png]]
+			- ![[Pasted image 20251203044019.png]]
+			- ![[Pasted image 20251203044048.png]]
+			- The slack here is wrong lmao ignore it![[Pasted image 20251203044110.png]]
+			- ![[Pasted image 20251203044135.png]]
+			- ![[Pasted image 20251203044143.png]]
+			- We can schedule 4 here cuz it doesn't increase resources![[Pasted image 20251203044213.png]]
+		- Chaining
+			- Multiple operations in a single cycle![[Pasted image 20251203044248.png]]
+			- Assuming the divide is super slow and not pipelined, you can do multiple adds in the same cycle. Done a lot, and it optimizes the schedule!
+		- Pipelining
+			- Nothing we did is pipelined :shock: !!!!!
+			- Input DFG, data delivery rate
+			- For fully pipelined circuit, must have one resource per operation (systolic arrays)
+	- Summary:
+		- Scheduling assigns each operation in a DFG a start time
+		- Different types:
+			- Minimum latency: ASAP, ALAP
+			- Latency Constrained: ASAP, ALAP
+			- Minimum-latency, resource-constrained: Hu's Algorithm, List Scheduling
+			- Minimum-resource, latency-constrained: List Scheduling
+- Binding/Resource Sharing
+	- During scheduling, we determined:
+		- When operatrions will execute and how many resources are needed
+	- We still need to decide which ops execute on which resources
+	- Hence, binding
+	- If multiple ops use the same resource, we now have resource sharing
+	- Basic Idea - Map operations onto resources such that operations in same cycle don't use same resources![[Pasted image 20251203050703.png]]
+	- Many possibilities! Bad bindings may increase resources,m require huge steering logic, reduce clock, etc![[Pasted image 20251203050724.png]]
+	- CANT DO THIS! BIG! 1 resource can't perform multiple operations simultaneously!![[Pasted image 20251203050754.png]]
+	- How to automate? Graph theory
+	- Comaptibility Graph
+		- Each node is an operation
+		- Edges represent compatible operations
+			- Compatible - if two ops can share a resource, i.e. operations that use same type of resource (ALU, Mult, DSP, etc) and are scheduled to different cycles
+		- ![[Pasted image 20251203050908.png]]
+		- Note- Fully connected subgraphs can share one resource (all involved nodes are compatible)
+		  ![[Pasted image 20251203051042.png]]![[Pasted image 20251203051046.png]]
+	- binding: Find minimum number of fully connected subgraphs that cover entire graph
+		- Well known problem: Clique partitioning (MP-Complete)![[Pasted image 20251203051138.png]]
+		- ![[Pasted image 20251203051155.png]]
+		- ![[Pasted image 20251203051201.png]]
+		- Translation to Datapath![[Pasted image 20251203051215.png]]
+	- Left Edge Algorithm
+		- Alternative to Clique Partitioning
+		- Take scheduled DFG, Rotate it 90 degrees
+		- ![[Pasted image 20251203051441.png]]![[Pasted image 20251203051445.png]]
+		- Video makes more sense![[Pasted image 20251203051555.png]]
+	- Extensions
+		- Algorithms presented so far find a valid binding
+			- But, don't consider amount ofsteering logic required
+			- Different bindings can require significantly different number of muxes
+		- One solution
+			- Extend compatibility graph
+			- Use weighted edges/nodes - cost function representing steering logic
+			- Perform clique partitioning, finding the set of cliques that minimize weight
+	- Binding Maps Summary
+		- Binding maps operations onto physical resources determining sharing among resources
+		- Binding may greatly affect steering logic
+		- Trivial for fully-pipelined circuits (1 resource per operation)
+		- Straightforward translation from bound DFG to datapath
+- HLS Summary
+	- Front end (lexing/parsing) converts code into intermediate representation. CDFG
+	- Scheduling assigns a start time for each operation in DFG
+		- CFG node start times defined by control dependencies
+		- Resource allocation determined by schedule
+	- Binding maps scheduled operations onto physical resources. Determines how resources are shared
+	- Big picture:
+		- Scheduled/Bound DFG can be translated into datapath
+		- CFG can be translated to a controlled
+		- HLS can create custom circuit for any CDFG!
+	- Limitations
+		- task-level parallelism in CDFG limited to individual control stated, can't have multiple states executing concurrently
+		- Potential solution: use model other than CDFG
+			- Kahn Process Networks where Nodes represent parallel processes/tasks and Edges represent communication between processes
+			- HLS can create a controller + datapath for each process, but must also consider communication buffers
+		- Challenge:
+			- Most high level code does not have explicit parallelism. So it's difficult to extract task-level parallelism from code
+		- Coding practices limit circuit performance! Very often, languages contain constructs not appropriate for circuit implementation like recursion, pointers, virtual functions
+		- Potential solution: use specialized languages to remove problematic constructs and add task-level parallelism
+		- Challenge: Difficult to learn new languages and man designers are losers who won't change
+		- Expert designers can also just create better circuits
+			- HLS has to work with specification in code, which can be difficult to automatically create efficient pipelines, and may require dozens of optimizations applied in a particular order
+			- Expert designers can transform algorithm, where synthesis can transform code, but can't change algorithm
+# Metastability & Clock Domain Crossing
+Whatever i don't already know from lab5 and dd, i'll write it out here
+- Don't add logic between clock domains
+- Metastability arises from: Asynchronous Inputs, Clock Domain Crossing
+- Metastability occurs when something changes during the setup and hold window of the clock
+- We don't know if metastability stabilizes to 0 or 1
+- we don't know if it'll ever resolve
+- synchronizers
+	- dual flip flop - gives a stable value (with a probability) but not necessarily a *correct* value. works if we're sending 1 bit only, which is good, but doing it like 32 time sfor a 32-bit data bus, you're basically creating an RNG. it blocks metastability, but we have to confirm our values at some point
+	- mux recirculation synchronizer (stitt doesn't like) - basically in the name, recirculate the incoming databus with a mux, saying to either hold the databus value or take in the new one when we know it's safe. A "send" signal is sent through a dual-ff used in the select of the mux, and then in theory it works... Too many assumptions for the solution, not portable either. Literally breaks the rule and adds logic between clock domains!
+		- Instead, use some controller to assert go to an FSM that'll make the send request for us and have a send and ack. HANDSHAKE!!!
+	- handshake - defined above, but is better. send and ack signals have dual ff when crossing clock domains. handshake is basically mux recirculation, but with FSMs instead of guessing with a mux. FSM is like 3 states, super easy to do. There is one limitation, slow AF! If we don't care about bandwidth, this is garbage. A stream of data? use smt else. Just a set amount of data? This is good
+	- fifo - had write and read port, which runs off same clock. in this instance, they have different clocks! graycode sequences of addresses, dual flop to handle synchronization, and fifo works for high bandwidth!
+- when changing one bit in a dual ff synchronizer, you always end up with either the correct value, or the previous value. gray coding. important to fifos
+- in timing constraint, define every signal that crosses clock domains as a false_path
+- can also set_max_delay to the signals and make sure it's less than a determined amount, like 1 clock cycle. stitt uses false paths but there's risks using it
+# Buffering Techniques
+- Buffers
+	- Flow control for tasks with different production and consumption rates
+	- Metastability issues where buffer can store data in one clock domain and be read in another
+	- Stores "windows" of data that is delivered to datapath. Window is a set of inputs needed each cycle by pipelined circuit. Generally more efficient than datapath requesting needed data, i.e. push data into datapath as opposed to pulling from memory
+	- Conversion between memory and datapath widths. SAy the input bus is 64-bit but datapath requires 128-bits per cycle, buffer won't say it has data until receiving pairs of inputs
+- FIFOs
+	- ![[Pasted image 20251203073933.png]]
+	- Most common buffer, used for synchronizing execution of parallel tasks. flow control
+	- Simple control, producer writes if not full, consumer reads if not empty![[Pasted image 20251203074005.png]]
+- FIFO Sizing
+	- Tasks often produce/consume data at different rate, or be streams of data
+	- We need to "size" the FIFO accordings to handle different rates without back pressure. Fp= max message rate of producer (msg/s). Fc = max message rate of consumer. We use abstract message to generalize the problem
+	- 3 common situations:
+		- Fp <= Fc, assuming consumer is always ready
+			- FIFO only needed if tasks on different clock domains (FIFO depth of 1 or 0)
+			- So why do traditional pipelines use registers instead of FIFOs? 
+				- Execution between pipeline operations in synchronized every clock cycle, so no need for FIFO
+		- Fp > Fc, assuming a constant producer stream
+			- FIFO would have to be infinitely large to avoid filling up
+			- If this is unavoidable, producer must monitor the full flag, and slow down if needed
+		- Fp > Fc, but producer sends data in bursts
+			- Something like Ethernet with 100gb/s, but data not available every cycle.
+			- How to determine FIFO depth that avoids back pressure?
+				- Fp - Fc = rate that FIFO fills up
+				- Next, combine the "fill rate" with the duration of the burst B
+				- Burst duration = B / Fp
+			- FIFO Depth = B * (1 - Fc / Fp)
+			- Fp = 1M msgs / s
+			- Fc = 250k msgs / s
+			- B = 1000 msgs
+			- FIFO Depth = 750
+			- You can still use a smaller depth with back pressure
+	- Similar problem, if time between bursts is sufficient for FIFO to drain, this means producer rate and consumer dat rate are equal within **some window of time**
+		- Dp = producer data rate (msgs / window)
+		- Dc = consumer data rage
+		- Dp = Dc
+		- But, don't know when data produced/consumed within window
+	- What is the minimum FIFO depth to avoid back pressure?
+		- Sliding window of time, can't produce more than Dp messages within **any** window
+		- Worst case: 
+			- All Dp messages arrive at beginning of window
+			- All Dc messages are consumed at end of windpw
+	- Consider several situations
+	1. Window is much longer than time to produce/consume all messages![[Pasted image 20251203074738.png]]
+	2. Window small enough to create overlap between Dp and Dc![[Pasted image 20251203074759.png]]
+	- Two situations can be combined:
+		- FIFO Depth = min(window - Dc, Dp)
+	- Examples for Dp = Dc = 10 messages:
+		- Window - 100 cycles --> FIFO depth = 10
+		- WIndow = 15 cycles --> FIFO depth = 5
+		- Window = 10 cycles --> FIFO depth = 0 (not needed unless different clocks)
+- FIFOs
+	- Often used between RAM and pipeline, outputs data in order read from memory![[Pasted image 20251203075017.png]]
+	- ![[Pasted image 20251203075023.png]]
+	- ![[Pasted image 20251203075029.png]]
+	- Timing issues
+		- Memory bandwidth is too small so circuit stalls or wastes cycles while waiting for data
+		- Memory bandwidth larger than data consumption rate of circuit, which may happen if area exhausted
+	- Memory bandwidth too small![[Pasted image 20251203075118.png]]
+	- ![[Pasted image 20251203075127.png]]
+	- ![[Pasted image 20251203075133.png]]
+	- Memory bandwidth larger than data consumption rate![[Pasted image 20251203075151.png]]
+	- ![[Pasted image 20251203075157.png]]
+	- ![[Pasted image 20251203075210.png]]
+- Improvements
+	- Do we need to fetch entire window from memory for each iteration?
+		- Only if windows of consecutive iterations are mutually exclusive
+	- Commonly, consecutive iterations have overlapping windows
+		- Overlap represents "reused" data
+		- Ideally, would be fetched from memory just once
+	- **Smart Buffer**
+		- Part of the ROCCC compiler
+		- Analyzer memory access patters
+		- Detects "sliding windows", reused data
+		- Prevents multiple accesses to same data
+		- ![[Pasted image 20251203075333.png]]
+- Smart Buffer
+	- ![[Pasted image 20251203075345.png]]
+	- ![[Pasted image 20251203075351.png]]
+	- ![[Pasted image 20251203075407.png]]
+	- ![[Pasted image 20251203075413.png]]
+- Comparison with FIFO
+	- FIFO - fetches a window fro each iteration
+		- Reads 3 elements every iteration. 100 iterations * 3 accesses/iteration = 300 memory accessses
+	- Smart BUffer - fetches as much data as possible each cycle, buffer assembles data into windows
+		- Ideally, reads each element once. # accesses = array size
+		- circuit performance is equal to latency plus time to read array from memory
+			- **No matter how much computation, execution time is approximately equal to time to stream in data!** (only true for streaming examples)
+		- 102 memory accesses
+			- Essentially improves bandwidth by 3x
+			- Smart buffers enable more unrolling
+- Unrolling with Smart Buffers
+	- Assume bandwidth = 128 bits
+	- We can read 128/32 = 4 array elements each cycle
+	- First access doesn't save time, since no data in buffer, so same as fifo that can unroll once
+	- ![[Pasted image 20251203075715.png]]
+	- After first window is in buffer
+		- Smart Buffer Bandwidth = Memory Bandwidth + reused Data
+			- 4 elements + 2 reused elements
+			- Essentially provides bandwidth of 6 elements per cycle
+			- Can perform 4 iterations in parallel
+			- 2x speedup compared to FIFO
+	- ![[Pasted image 20251203075802.png]]
+- Datapath Design w/ Smart Buffers
+	- Datapath based on unrolling enabled by smart buffer bandwidth (not memory bandwidth)
+	- Smart buffer waits until initial indows in buffer before passing any data to datapath
+		- Adds a little latency, but avoids first iteration requiring different control due to less unrolling
+	- 
