@@ -1,0 +1,180 @@
+# Memory Management
+- Memory Management: Why?
+	- Modern computers have bajillions of bits of memory. We need to keep track of it!
+	- Addressing:
+		- What type of addressing should processes use?
+		- How do we convert between virtual and physical memory addresses?
+	- Protection:
+		- How do we protect the OS from processes?
+		- How do we protect processes from each other? 
+	- Allocation:
+		- What memory is in use?
+		- What is available?
+		  Who should we give memory to?
+		- When? How?
+- What is a Memory Address?
+	- A memory address indicates where data resides
+	- Physical Addressing:
+		- Absolute location on memory chip
+	- Logical Addressing
+		- Relative: These are translated by hardware and OS to actual physical location
+- Resolving "Memory Addresses"
+	- Physical addresses can be resolved at:
+		- Development time: Hard-coded addresses
+		- Compile time: by compiler, special OS addresses
+		- Link time: by linker, e.g. static libraries
+		- Load time: by loader, e.g. shared libraries
+		- Run time: software + hardware
+- Physical Addressing
+	- Uniprogrammed systems provide a division between OS and process memory
+	- This is usually done via a **fence register**
+	- ![[Pasted image 20251010152052.png]]
+	- Another way to protect addresses is using high/low registers
+	- In a multiprogramming environment, a system may use high and low registers to protect processes and the OS by defining memory boundaries
+	- ![[Pasted image 20251010153119.png]]
+	- The high and low registers at set at every context switch. As with the fence register, in user mode, high and low registers are tested against each physical address by hardware
+- Logical Addressing
+	- Base and Limit registers
+	- When using logical addressing, most systems make use of base and limit registers
+	- ![[Pasted image 20251010153811.png]]
+	- It's LA > Limit
+- Memory Allocation
+	- A memory allocation approach requires us to address several issues
+	- How will we track free space?
+		- Lists, bitmaps, tables
+	- What is the right size for allocation units?
+		- Not too big, not too small; just right
+		- Memory fragmentation may be a problem
+	- How do e find a space for a process
+		- It must be big enough, but still efficient
+	- Should extra space be allocated for a process (for stack and heap)?
+		- Maybe. Probably. Ok, definitely. Well, most of the time
+	-  Tracking with bitmaps
+		- In memory, we will sometimes have blocks that are not used
+		- One way to track memory use (what is in use, what is free) is via a bitmap of blocks
+		- ![[Pasted image 20251010155056.png]]
+		- Only 4 blocks at a time, wasteful
+	- Tracking with lists
+		- In memory, we will sometimes have blocks that are not used
+		- alternatively, we can use linked lists to track memory use
+		- ![[Pasted image 20251010155139.png]]
+	- Hole-List-is Approach
+		- We can further optimize by tracking the holes and processes separately.
+		- We also need to maintain the list as processes enter and leave memory
+		- Idk if they ask this
+	- Algorithms
+		- Some algorithms:
+			- First fit: use the first hole big enough for the process
+			- Next fit - use the next hole big enough
+			- Best fit - finds the smallest hole big enough
+			- Worst fit - find the largest hole available
+			- Quick fit - separate lists of commonly requested sizes
+# Memory Partitioning
+- Multiple Fixed Partitions (MFP)
+	- ![[Pasted image 20251010160147.png]]
+- Multiple Variable Partitions (MVP)
+	- Partitions can change over time to accommodate process load
+	- ![[Pasted image 20251010160615.png]]
+- External Fragmentation
+	- There may be some memory fragmentation with MVP! They are small fragments of memory that can't be used. 
+	- External fragmentations - memory is fragmented and can't be allocated to any process
+	- ![[Pasted image 20251010160707.png]]
+- Internal Fragmentation 
+	- Memory is fragmented inside the process
+	- ![[Pasted image 20251010160955.png]]
+	- The heap may become fragmented with use
+- Memory Fragmentation
+	- External Fragmentation
+		- Solution: Fixed memory partitions (ugh)
+		- Solution: Compaction
+		- Solution: Paging and segmentation
+	- Internal Fragmentation
+		- Memory allocated to a process not in use
+- Memory Compaction
+	- MVP
+	- If there isn't space for a process in a multiple variable partition scheme, free memory can be consolidated using memory compaction
+	- ![[Pasted image 20251010162413.png]]
+- Out of memory?
+	- Sometimes, no matter how we arrange it, there isn't enough memory for everything!
+	- Overlays:
+		- Part of memory stored on disk, swapped in and out as needed
+		- User space approach -- no OS involvement! 
+	- Virtual Memory:
+		- Segmentation - breaks up processes into individual segments which the OS swaps in and out (data, text, heap..)
+		- Paging - breaks memory space into evenly sized chunks (pages) which are loaded into and out of physical memory
+		- Both require explicit OS support (or OS-level privileges)
+- Memory Overlays
+	- Consider a uniprogrammed system and a program that can't fit its code in the main memory.
+	- ![[Pasted image 20251010163411.png]]
+	- Use of memory overlays require an overlay manager in user space to track program and/or data sections and load them on an as-needed basis. 
+# Virtual Memory
+- Virtual memory addressing provides a virtual address space that maps to physical memory
+- How does it work?
+	- The process is provided by the OS with a virtual address space broken into pages or segments (64bit systems, only pages)
+	- A running process generates virtual addresses
+	- The OS translates virtual addresses into physical addresses, swapping pages or segments as needed
+- Paging
+	- Page sizes are fixed and are the unit of allocation to processes (typically 4K)
+	- This may generate internal fragmentation, but no external fragmentation
+- Paging Systems
+	- OS & Hardware support
+	- In modern systems, the CPU uses a memory management unit MMU to convert virtual addresses into physical ones quickly.
+	- ![[Pasted image 20251010164344.png]]
+	- Historically, the MMU was a separate chip, but in modern systems it is integrated into the same die as the CPU
+	- Memory Mapping
+		- A **page table** is used to map virtual addresses to physical addresses
+		- ![[Pasted image 20251010164426.png]]
+		- ![[Pasted image 20251010164439.png]]
+	- MMU Operation
+		- The MMU converts the virtual page number to a physical one (keeping the offset)
+		- 0x931A --> 1001 001100011010
+		- ![[Pasted image 20251010164717.png]]
+	- Page Tables
+		-   ![[Pasted image 20251010164931.png]]
+		- Some pages are in the cache
+			- cache okay = 1 and present = 1
+		- Some pages are in main memory but not cache
+			- cache ok = 0 and present = 1
+		- Some pages are on the disk
+			- cache ok = 0 and present = 0
+		- Page Table challenges
+			- Quick access is essential, so common entries are cached
+			- The table can get large
+			- Solution: Page the table
+		- ![[Pasted image 20251010165111.png]]
+		- ![[Pasted image 20251010165214.png]]
+- Caching
+	- Cache Types
+		- Instruction cache - Contains frequently used memory lines of text segments of a program
+		- Data cache - contains frequently used lines of data and stack segments
+		- Translation Lookaside Buffer (TLB) - Popular page table entries (subset of the page table for speed)
+	- Cache Features
+		- TLB usually contains 16 to 512 page table entries and may use associative (content-addressable) memory
+	- There are issues
+		- What is the cache line size?
+			- How much data in cache may impact hit rate
+		- Cache Replacement Policy
+			- Which line to replace when miss and cache full?
+			- Mostly dealt with by hardware
+		- Cache Consistency
+			- Write-through - write to cache and write to memory
+			- Write-back - copy to memory when removing from cache - lazy writes
+			- Access by other CPU, peripheral - coherence
+- Paging Systems
+	- TLB - ![[Pasted image 20251010165939.png]]
+	- Page Tables
+		- All addresses conversions must come from the TLB
+		- Some pages are only in main memory
+		- Some pages are only on disk
+		- Some pages are in cache and memory
+		- ![[Pasted image 20251010170016.png]]
+- Really big page tables
+	- 64-bit address space: 16 EiB of virtual memory space
+	- With 4KB pages, how many entries in page table?
+	- 4TB just to store page entries, which is a whole lot of them
+- Process Virtual Address Space
+	- Especially in 64-bit mode, some OSs allocate virtual address spaces by process
+	- ![[Pasted image 20251010170316.png]]
+- Multilevel Page Tables
+	- ![[Pasted image 20251010170340.png]]
+	- 
