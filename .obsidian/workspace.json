@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Spring26/EEL4930 - SoC/Notes.md",
+                "file": "Spring26/EEE4511C - RTDSP/Midterm 1 Notes.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Notes"
+              "title": "Midterm 1 Notes"
             }
           }
         ],
@@ -121,7 +121,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200
   },
   "right": {
     "id": "b784328128f1ebd1",
@@ -137,6 +137,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Spring26/EEL4930 - SoC/Notes.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -146,7 +147,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for Notes"
             }
           },
           {
@@ -155,11 +156,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Spring26/EEL4930 - SoC/Notes.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from Notes"
             }
           },
           {
@@ -183,19 +185,21 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Spring26/EEL4930 - SoC/Notes.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of Notes"
             }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
-    "width": 300,
+    "width": 200,
     "collapsed": true
   },
   "left-ribbon": {
@@ -211,22 +215,35 @@
   },
   "active": "e416f0d566330b34",
   "lastOpenFiles": [
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218174600.png",
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218174516.png",
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218174340.png",
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218174306.png",
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218174222.png",
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218174124.png",
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218173814.png",
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218185836.png",
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218183959.png",
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218175857.png",
-    "Spring26/EEL4930 - SoC/Images/Pasted image 20260218174628.png",
-    "Spring26/EEL4930 - SoC/Notes.md",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227045818.png",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227044743.png",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227044721.png",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227044050.png",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227044035.png",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227040326.png",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227035842.png",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227035824.png",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227034039.png",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227033321.png",
+    "Spring26/EEE4511C - RTDSP/Images/Pasted image 20260227033313.png",
+    "Spring26/EEE4511C - RTDSP/Images",
+    "Spring26/EEE4511C - RTDSP/New folder",
+    "Spring26/EEE4511C - RTDSP/Midterm 1 Notes.md",
+    "Fall25/COP4600/Module 4.md",
+    "Fall25/COP4600/Module 5.md",
+    "Fall25/EEE4714/Final Exam Notes.md",
+    "Fall25/EEE4714/Intro to HW Sec and Trust.md",
     "Spring26/EEL6395 - RC2/Lecture Notes.md",
     "Spring26/EEL6395 - RC2/Project Notes.md",
+    "Spring26/EEE4511C - RTDSP",
+    "Fall25/EEE4714/Intro to Cryptography.md",
+    "Spring26/EEL4930 - SoC/Notes.md",
+    "Fall25/aprog/M2 Notes + Topic List.md",
+    "Fall25/CIS4930/0x0 Notes.md",
+    "Fall25/CIS4930/0x03 Notes.md",
+    "Fall25/CIS4930/Lab0-Notes.md",
+    "Fall25/CIS4930/8-27 Class.md",
     "Spring26/EEL4930 - SoC/Images",
-    "Fall25/EEE4714/Final Exam Notes.md",
     "Spring26/EEL4930 - SoC",
     "Spring26/EEL6395 - RC2",
     "Spring26"

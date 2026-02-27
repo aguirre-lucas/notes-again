@@ -337,7 +337,7 @@ branch target if taken:
 	- $\text{Pipeline speedup} = \frac{\text{Pipeline Depth}}{1 + \text{Branch Frequency} \times \text{Branch Penalty}}$
 	- ![[Pasted image 20260218185836.png]]
 - Most processors today have 8-16 pipeline stages
-- If more pipelines equal a larger speedup, why not have 1 morbillion pipeines?
+- If more pipelines equal a larger speedup, why not have 1 morbillion pipelines?
 	- More pipelines means more instructions in architecture, which means more hazards to deal with
 - If we can increase pipeline, where can we get that improved performance of the processor?
 	- We can make instructions longer
@@ -367,4 +367,53 @@ branch target if taken:
 		- Two independent floating-point operations
 		- Two independent memory references
 	- Must be enough parallelism in code to fill the available slots
-	- 
+	- Disadvantages
+		- Statically finding parallelism
+		- Code size
+		- No hazard detection software
+		- Binary code compatibility
+	- Modern microarchitectures:
+		- Dynamic scheduling + multiple issue + speculation
+	- Two approaches:
+		- Assign reservation stations and update pipeline control table in half clock cycles 
+			- Only supports 2 instructions/.clock
+		- Design logic to handle any possible dependencies between the instructions
+		- Hybrid approaches
+	- Issue logic can become bottleneck
+- Example MIPS processor with two issue![[Pasted image 20260218231414.png]]
+- Multiple instructions (issue packet) are issued in one clock cycle
+	- VLIW, intel calls it EPIC (Explicitly Parallel Instruction Computer)
+- The compiler packs instructions in issue packet and avoids hazards
+- Example: MIPS Processsor with 2 issue
+	- 1 ALU/branch
+	- 1 memory access
+- ![[Pasted image 20260218231543.png]]
+- Loop-Level parallelism
+	- Unroll loop statically or dynamically
+	- Use SIMD (vector processors and GPUs)
+- Challenges:
+	- Data dependency:
+		- Instruction j is data dependent on instruction i if
+			- Instruction j produces a result that may be used by instruction j
+			- Instruction j is data dependent on instruction k and instruction k is data dependent on instruction i
+- Dependent instructions cannot be executed simultaneously
+- Name Dependence
+	- Two instructions use the same name but no flow of information
+		- Not a true data dependence, *but is a problem when reordering instructions*
+		- Antidependence: Instruction j writes a register or memory location that instruction i reads
+			- Initial ordering (i before j) must be preserved
+		- Output dependence: Instruction i and instruction j write the same register or memory location
+			- Ordering must be preserved
+		- To resolve, use renaming techniques
+- Data Hazards
+	- Read after write
+	- Write after write
+	- Write after read
+	- Order must be preserved for all of them
+- Control Dependence
+	- Ordering of instruction i with respect to a branch instruction
+		- Instruction control-dependent on a branch cannot be moved before the branch so that its execution is no longer controlled by the brnach
+		- An instruction not control-dependent on a branch cannot be moved after the branch so that its execution is controlled by the branch
+		- TLDR: Don't move things dependent on a branch out side it, don't move things not dependent on a branch inside it
+- ![[Pasted image 20260219001742.png]]
+- 
