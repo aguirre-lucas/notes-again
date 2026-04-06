@@ -1627,12 +1627,1085 @@ module moore_2p begin(
 			end
 	endcase
 	end
-
 endmodule
+
+// this can save a little bit of code for the same behavior
+module moore_2p_2 begin(
+    input  logic       clk,
+    input  logic       rst,
+    input  logic       en,
+    output logic [3:0] out
+);
+	typedef enum logic [1:0] {
+		STATE0,
+		STATE1,
+		STATE2,
+		STATE3
+	} state_t;
+);
+
+	state_t state_r, next_state;
+	// async reset
+	always_ff @(posedge clk or posedge rst) begin
+		state_r <= next_state;
+		if (rst) state_r <= next_state;
+	end
+	
+	always_comb begin
+		next_state = state_r; // now we don't need else
+		case (state_r) 
+			STATE0: begin
+				out = 4'b0001;
+				if (en) next_state = STATE1;
+				//else next_state = STATE0;
+			end
+			
+			STATE1: begin
+				out = 4'b0010;
+				if (en) next_state = STATE2;
+				//else state_r = STATE1;
+			end
+			
+			STATE2: begin
+				out = 4'b0100;
+				if (en) next_state = STATE3;
+				//else state_r = STATE2;
+			end
+			
+			STATE3: begin
+				out = 4'b1000;
+				if (en) next_state = STATE0;
+				//else state_r = STATE3;
+			end
+			
+			default: begin
+			end
+	endcase
+	end
+endmodule
+
+
+module mealy_2p (
+    input  logic clk,
+    input  logic rst,
+    input  logic go,
+    input  logic ack,
+    output logic en,
+    output logic done
+);
+
+    typedef enum logic [1:0] {
+        START,
+        COMPUTE,
+        FINISH,
+        RESTART
+    } state_t;
+    state_t state_r, next_state;
+
+    always_ff @(posedge clk or posedge rst) begin
+        state_r <= next_state;
+        if (rst) state_r <= START;
+    end
+
+    always_comb begin
+        case (state_r)
+            START: begin
+                // In a Mealy FSM, outputs are a function of the state and the
+                // current input, which makes them associated with transitions.
+                // Therefore, all outputs appear within if statements that
+                // correspond to transitions between states.
+                if (go) begin
+                    done       = 1'b0;
+                    en         = 1'b0;
+                    next_state = COMPUTE;
+                end else begin
+                    done       = 1'b0;
+                    en         = 1'b0;
+                    next_state = START;
+                end
+            end
+
+            COMPUTE: begin
+                if (ack) begin
+                    en         = 1'b0;
+                    done       = 1'b1;
+                    next_state = FINISH;
+                end else begin
+                    en         = 1'b1;
+                    done       = 1'b0;
+                    next_state = COMPUTE;
+                end
+            end
+
+            FINISH: begin
+                if (go) begin
+                    done       = 1'b1;
+                    en         = 1'b0;
+                    next_state = FINISH;
+                end else begin
+                    done       = 1'b1;
+                    en         = 1'b0;
+                    next_state = RESTART;
+                end
+            end
+
+            RESTART: begin
+                if (go) begin
+                    done       = 1'b0;
+                    en         = 1'b0;
+                    next_state = COMPUTE;
+                end else begin
+                    done       = 1'b1;
+                    en         = 1'b0;
+                    next_state = RESTART;
+                end
+            end
+        endcase
+    end
+endmodule  // mealy
 ```
 
+# Testbenches & Gotchas
+- Monolithic Testbench - kinda this
+	- Better for simple testbenches
+	- More complex testbenches aren't monolithic
+```systemverilog
+`timescale 1 ns / 100 ps // need this
+
+module mux2x1_tb;
+// no parameters (yet)
+
+	logic in1, in1, sel, out;
+	mux2x1 DUT (
+		.in0(in0),
+		.in1(in1),
+		.sel(sel),
+		.out(out),
+	)
+	
+	
+	// think of this as an always block, but it only runs once (unless specified otherwise)
+	// this will run at the beginning of the simulation
+	logic expected_out;
+	initial begin
+		$time format(-9, 0, " ns"); // necessary for printing time with $display(). gripe with sv
+		in0 <= 1'b0;
+		in1 <= 1'b1;
+		sel <= 1'b1;
+		#10; // wait 10 time steps (10ns for our timescale)
+		
+		// assert correct value and print error elsewhere
+		expected_out = sel ? in1 : in0;
+		if (out != expected_out) begin
+			$error("out = %b instead of %b", $time, out, expected_out);
+		end
+	end
+endmodule
+// This testbench sucks. Lets make a tb that covers every possibility of inputs
+
+module mux2x1_tb1;
+	logic in1, in1, sel, out;
+	mux2x1 DUT (
+		.in0(in0),
+		.in1(in1),
+		.sel(sel),
+		.out(out),
+	)
+	
+	initial begin
+		for (int i = 0; i < 8; i++) begin
+			in0 <= i[0];
+			in1 <= i[1];
+			sel <= i[2]; 
+			// `i` is a 32-bit integer, so we're indexing the bits to drive
+			// our testbench.
+			// int --> expected_out 
+			// 000 --> 0
+			// 001 --> 1
+			// 010 --> 0
+			// ...
+			expected_out = sel ? in1 : in0;
+		end
+		// assert correct value and print error elsewhere
+		// should always be true
+		assert(out == expected_out) else $error("out = %b instead of %b", $time, out, expected_out); // print error message if false 
+	end
+
+endmodule
 
 
+module mux2x1_tb2;
+	logic in1, in1, sel, out;
+	mux2x1 DUT (
+		.in0(in0),
+		.in1(in1),
+		.sel(sel),
+		.out(out),
+	)
+	
+	// generate a clock signal w/ 10ns period.
+	always begin
+		forever #5 clk <= !clk; // forever here is redundant, but not bad to use
+	end
+	
+	initial begin
+		for (int i = 0; i < 8; i++) begin
+			in0 <= i[0];
+			in1 <= i[1];
+			sel <= i[2]; 
+			@(posedge clk); // wait until clock is high again!
+			// used all the time, but is annoying in simulation.
+			expected_out = sel ? in1 : in0; // assigned after clock edge. in simulation, the waveform for expected_out is delayed compared to the out signal. if we tried to move it before the clock edge, we get a bunch of errors because of NBA!! Because NBA, the signals hadn't been driven yet so no update.
+			// However, if you wanted to keep it before the clock edge, you might try to fix it using blocking assignments, bad! Could introduce race conditions on the code
+		end
+		assert(out == expected_out) else $error("out = %b instead of %b", $time, out, expected_out); // print error message if false 
+		$display("Tests completed.");
+		
+		
+	end
+
+endmodule
+
+module mux2x1_tb3;
+	logic in1, in1, sel, out;
+	mux2x1 DUT (
+		.in0(in0),
+		.in1(in1),
+		.sel(sel),
+		.out(out),
+	)
+	
+	// generate a clock signal w/ 10ns period. : INITAL INSTEAD OF ALWAYS
+	initial begin : generate_clock
+		forever #5 clk <= !clk;
+	end
+	
+	initial begin
+		for (int i = 0; i < 8; i++) begin
+			in0 <= i[0];
+			in1 <= i[1];
+			sel <= i[2]; 
+			@(posedge clk); 
+			expected_out = sel ? in1 : in0; 
+		end
+		assert(out == expected_out) else $error("out = %b instead of %b", $time, out, expected_out); // print error message if false 
+		$display("Tests completed.");
+		$finish; // makes the tb end "run -all" BUT if you click yes on the popup it will close questa! Better for command line, and that's annoying so use this instead
+		disable generate_clock; 
+		// now, if we "run -all" it just runs and doesn't give you that popup and it's better in the gui format. 
+		
+	end
+endmodule
+```
+## Registers TB
+```systemverilog
+module registers_tb2;
+	localparam NUM_TESTS = 10000;
+	localparam WIDTH = 8;
+	logic clk <= 1'b0, rst, en, prev_en; // always initialize clock
+	logic [WIDTH-1:0] in, out;
+	logic [WIDTH-1:0] prev_in, prev_out;
+	
+	register #(.WIDTH(WIDTH)) DUT (.*); // glob all the same name and tie to dut
+
+	initial begin : gen_clock
+		forever #5 clk <= !clk;
+	end
+	
+	initial begin : provide_stim
+		rst <= 1'b1;
+		in <= '0;
+		en <= 1'b1;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		repeat (2) @(posedge clk);
+		
+		for (inti = 0; i < NUM_TESTS; i++) begin
+			in <= $urandom;
+			en <= 1'b1;
+			@(posedge clk);
+		end
+		disable gen_clk;
+	end
+	
+	initial begin : check_outputs
+		forever begin
+			$time format(-9, 0, " ns");
+			@(posedge clk);
+			prev_in = in; // also bad, but since it's not used anywhere else it won't introduce any race conditions.
+			prev_en = en;
+			prev_out - out;
+			@(negedge clk); // not good, but can be used so condition sampled at the right time and properly. 
+			// if out !- in error!!
+			if (out != in) $error("[%0t]Expected=%d, Actual=%d", in, out);
+			if (prev_en && prev_in != out) $error("[%0t]Expected=%d, Actual=%d", in, out);
+			if (!prev_en && out != prev_out) $error("[%0t]Expected=%d, Actual=%d", in, out);)
+endmodule
+// this top one is basically garbage. it works, but it's so complicated for no reason
+
+module registers_tb3;
+	localparam NUM_TESTS = 10000;
+	localparam WIDTH = 8;
+	logic clk <= 1'b0, rst, en, prev_en; // always initialize clock
+	logic [WIDTH-1:0] in, out;
+	logic [WIDTH-1:0] prev_in, prev_out;
+	
+	register #(.WIDTH(WIDTH)) DUT (.*); // glob all the same name and tie to dut
+
+	initial begin : gen_clock
+		forever #5 clk <= !clk;
+	end
+	
+	initial begin : provide_stim
+		rst <= 1'b1;
+		in <= '0;
+		en <= 1'b1;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		repeat (2) @(posedge clk);
+		
+		for (inti = 0; i < NUM_TESTS; i++) begin
+			in <= $urandom;
+			en <= 1'b1;
+			// place previouses here so we can start the test earlier and not have to wait. it works because we no longer have to check for the current out, but instead we're checking only the previous output. 
+			prev_in <= in; 
+			prev_en <= en;
+			prev_out <= out;
+			@(posedge clk);
+		end
+		disable gen_clk;
+	end
+	
+	initial begin : check_outputs
+		forever begin
+			$time format(-9, 0, " ns");
+			@(posedge clk);
+			if (out != in) $error("[%0t]Expected=%d, Actual=%d", in, out);
+			if (prev_en && prev_in != out) $error("[%0t]Expected=%d, Actual=%d", in, out);
+			if (!prev_en && out != prev_out) $error("[%0t]Expected=%d, Actual=%d", in, out);)
+endmodule
+// this is slightly better, but still in no way good, especialyl if it's this complex still for just a register. 
+
+module registers_tb4;
+	localparam NUM_TESTS = 10000;
+	localparam WIDTH = 8;
+	logic clk <= 1'b0, rst, en, ; // always initialize clock
+	logic [WIDTH-1:0] in, out, expected;
+	// get rid of "previous" stuff
+	register #(.WIDTH(WIDTH)) DUT (.*); // glob all the same name and tie to dut
+
+// let's decompose the tb into finer and finer responsibilities
+	initial begin : gen_clock
+		forever #5 clk <= !clk;
+	end
+	
+	initial begin : provide_stim
+		rst <= 1'b1;
+		in <= '0;
+		en <= 1'b1;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		repeat (2) @(posedge clk);
+		
+		for (inti = 0; i < NUM_TESTS; i++) begin
+			in <= $urandom;
+			en <= 1'b1;
+			@(posedge clk);
+		end
+		disable gen_clk;
+	end
+	
+	initial begin : monitor
+		// essentially will check for some condition where there is a valid output 
+		@(posedge clk iff !rst);
+		forever begin
+			expected <= en ? in : out; // if enabled, expected output should be the input of the DUT, else it's the output
+			@(posedge clk); 
+		end
+	end
+	
+	initial begin : check_outputs
+		@(posedge clk iff !rst); // if and only if not resetted
+		forever begin
+			$time format(-9, 0, " ns");
+			@(posedge clk); 
+			if (expected != out) $error("Expected = %0h, Actual = %0h", exoected, out);
+			if (!prev_en !== 1'b1 && prev_out !== out)	$error("Expected = %0h, Actual = %0h", exoected, out);
+		end
+		// use !== to check for undefined values (like testing during reset)
+		// ditto for ==, use ===
+endmodule
+```
+# Assertions (SVAs)
+```systemverilog
+// instant assertion
+module registers_tb4;
+	localparam NUM_TESTS = 10000;
+	localparam WIDTH = 8;
+	logic clk <= 1'b0, rst, en, ; // always initialize clock
+	logic [WIDTH-1:0] in, out, expected;
+	// get rid of "previous" stuff
+	register #(.WIDTH(WIDTH)) DUT (.*); // glob all the same name and tie to dut
+
+// let's decompose the tb into finer and finer responsibilities
+	initial begin : gen_clock
+		forever #5 clk <= !clk;
+	end
+	
+	initial begin : provide_stim
+		rst <= 1'b1;
+		in <= '0;
+		en <= 1'b1;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		repeat (2) @(posedge clk);
+		
+		for (inti = 0; i < NUM_TESTS; i++) begin
+			in <= $urandom;
+			en <= 1'b1;
+			@(posedge clk);
+		end
+		disable gen_clk;
+	end
+	
+	initial begin : monitor
+		// essentially will check for some condition where there is a valid output 
+		@(posedge clk iff !rst);
+		forever begin
+			expected <= en ? in : out; // if enabled, expected output should be the input of the DUT, else it's the output
+			@(posedge clk); 
+		end
+	end
+	
+	initial begin : check_outputs
+		@(posedge clk iff !rst); // if and only if not resetted
+		forever begin
+			$time format(-9, 0, " ns");
+			@(posedge clk); 
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// achieves the same thing as the if statement
+			assert(expected == out) else $error("Expected = %0h, Actual = %0h", expected, out);	// with the else we can print the custom message. immediate assertions don't really save any space in the code, but it's just an example of the simplest assertion you can have.
+			// immediate assertion must occur inside a block where we have sequential code 
+		end
+endmodule
+
+
+module ff_tb#(
+	parameter int NUM_TESTS = 1000;
+);
+	logic clk = 1'b0, rst, en, in, out;
+	
+	ff DUT (
+		.en(1'b1);
+		.*
+	)
+	
+	
+	initial begin : clk_gen
+		forever #5 clk = ~clk;
+	end
+	
+	initial begin : stim_proc
+		$timeformat(-9, 0, " ns");
+		rst <= 1'b1;
+		in <= 1'b0;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		
+		for (int i = 0; i < NUM_TESTS; i++) begin
+			in <= $urandom;
+			@(posedge clk);
+		end
+		
+		disable clk_gen;
+		$display("Test Completed.");
+	end
+	
+	// beauty of assertions
+	// sequences - construct that allows us to create boolean expressions over an amount of assertions in a range of time
+	// a ##2 b ##2 c ##5 !d; this is a boolean expression that captures a range of time
+	// concurrent assertion. sometimes called a property
+	// ( [time to sample] [ assertion to make ])
+	// sequences by themselves aren't useful, but become more useful when they're combined with **implications**
+	
+	
+	// this is something someone would write to emulate the property of a flipflop (not worrying about the enable) but this is bad for a reason
+	
+	// assert property (@(posedge clk) in ##1 out);
+	
+	// what this is actually saying is "for every clock cycle, in should be 1 and one clock cycle later out should be 1"
+	// we certainly don't want this, as sometimes in can be 0
+	
+	// to fix this, lets create an implication (|->)
+	
+	// assert property (@(posedge clk) in |-> ##1 out);
+	
+	// this operator is called the implication operator. the value preceding the operator is called the antecedent or trigger condition, the value on the right is the consequence
+	// this is saying, if the condition on the left is false, the entire expression becomes "vacuously true", so the implication only becomes applied when the trigger condition is asserted. hence, when in=0, this won't trigger the implication and not assume in should always be asserted
+	// now it's saying if in=1, on the next clock cycle out should be 1
+	
+	// now, that assertion isn't perfect, as it doesn't account for the reset, but if we ran this testbench as is, our input is 0 during the reset phase so the property never triggers and never prints an error. let's make this account for the reset using a disable statement
+	
+	// now this says, if rst is asserted, we don't want to evaluate this. with this property, we have a very good replacement of our monitor and output_check from the previous register testbenches. we can eventually capture an enormous amount of functionaltity with these assertion properties
+	assert property (@(posedge clk) disable iff (rst) in |-> ##1 out);
+
+
+endmodule
+
+
+module ff_tb#(
+	parameter int NUM_TESTS = 1000;
+);
+	logic clk = 1'b0, rst, en, in, out;
+	
+	ff DUT (
+		.en(1'b1);
+		.*
+	)
+	
+	
+	initial begin : clk_gen
+		forever #5 clk = ~clk;
+	end
+	
+	initial begin : stim_proc
+		$timeformat(-9, 0, " ns");
+		rst <= 1'b1;
+		in <= 1'b0;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		
+		for (int i = 0; i < NUM_TESTS; i++) begin
+			in <= $urandom;
+			@(posedge clk);
+		end
+		
+		disable clk_gen;
+		$display("Test Completed.");
+	end
+	
+	
+	assert property (@(posedge clk) disable iff (rst) in |-> ##1 out);
+	 // |=> is shorthand for  |-> ##1
+	assert propert (@(posedge clk) disable iff (rst) in |=> out);
+	
+	assert property (@(posedge clk) rst |=> !out); 
+    always @(posedge rst) #1 assert (out == 1'b0);
+    // here we can test for when the reset is enabled that 1 clock cycle later, out is 0. Top is for synchronous reset, bottom is for asynchronous reset
+
+
+endmodule
+
+module ff_en_tb #(
+    parameter int NUM_TESTS = 10000;
+);
+
+    logic clk = 1'b0, rst, en, in, out;
+    ff DUT (.*);
+    
+    initial begin : clk_gen
+        forever #5 clk = ~clk;    
+    end
+    
+    initial begin : drive_inputs
+        $timeformat(-9, 0, " ns");
+        rst <= 1'b1;
+        in <= 1'b0;
+        en <= 1'b0;
+        repeat (5) @(posedge clk);
+        @(negedge clk);
+        rst <= 1'b0;
+        
+        for (int i = 0; i < NUM_TESTS; i++) begin
+            in <= $urandom;
+            en <= $urandom;
+        end
+        disable clk_gen;
+        $display("Tests completed.");
+        
+    end
+    
+    // |=> is shorthand for  |-> ##1
+    assert property (@(posedge clk) disable iff (rst) en |=> out == $past(in, 1));
+    assert property (@(posedge clk) disable iff (rst) out == $past(in, 1, en)); 
+    // might work, we can use $past to get previous values without having to define them and sample them ourselved. i think we can pass in the enable parameter
+    // however, this doesn't test the entire system, as we don't test for when the enable isn't asserted
+    assert property(@(posedge clk) dsiable iff (rst) !en |=> out == $past(out,1));
+    assert property(@(posedge clk) dsiable iff (rst) !en |=> $stable(out));
+    // both of these do the same thing where it makes sure the value of out doesn't change if the the enable isn't asserted. 
+    assert property (@(posedge clk) rst |=> !out); 
+    always @(posedge rst) #1 assert (out == 1'b0);
+
+endmodule;   
+
+module delay_tb1#(
+	parameter int NUM_TESTS = 1000,
+	parameter int CYCLES = 4,
+	parameter int WIDTH = 8
+);
+	
+	logic clk = 1'b0, rst, en;
+	logic [WIDTH-1:0] data_in, data_out;
+	
+	delay #(
+		.CYCLES(CYCLES),
+		.WIDTH(WIDTH)
+	) DUT (
+		.*
+	);
+	
+	initial begin : clk_gen
+		forever #5 clk <= ~clk;
+	end
+	
+	initial begin : stim_proc
+		$timeformat(=9, 0, " ns");
+		
+		rst <= 1'b1;
+		en <= 1'b0;
+		data_in <= '0;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		
+		for (int i = 0; i < NUM_TESTS; i++) begin
+			data_in <= $urandom;
+			en <= $urandom;
+			@(posedge clk);
+		end
+		
+		disable clk_gen;
+		disable check_output;
+		$display("Tests completed.");
+	end
+	
+	// here we can create a half decent delay model to verify the DUT
+	// round up the buffer to the next power of 2, which is necessary because of addressing logic
+	localparam int BUFFER_SIZE = 2 ** $clog2(CYCLES);
+	// now reset the contents
+	logic [WIDTH-1:0] buffer[BUFFER_SIZE] = '{default: '0};
+	// addresses for acessing the buffer. inputs are written to buffer and outputs are read from buffer
+	logic [$clog2(CYCLES)-1:0] wr_addr = 0;
+	logic [$clog2(CYCLES)-1:0] rd_addr;
+	
+	logic [WIDTH-1:0] correct_out;
+	// this read address should be offset from the write addres by CYCLES+1
+	assign rd_addr = wr_addr - CYCLES + 1;
+	
+	// generate reference model
+	generate
+		if (CYCLES==0) begin
+			assign correct_out = data_in;
+		end else begin
+			always @(posedge clk or posedge rst) begin
+				if (rst) correct_out <= '0;
+				else if (en) begin
+					buffer[wr_addr] = data_in;
+					correct_out <= buffer[rd_addr];
+					wr_addr <= wr_addr + 1'b1;
+				end
+			end
+		end
+	endgenerate
+	
+	initial begin : check_output
+		forever begin
+			@(posedge clk);
+			if (data_out != correct_out) $error("[%0t] out = %0h instead of %0h.", $realtime, data_out, correct_out);
+		end
+	end
+	
+	// this assert property can replace check_output if we wanted
+	assert property (@(posedge clk) disable iff (rst) data_out == correct_out);
+
+	// issue here is that the generated model is more complex than the DUT itself, even though the DUT is simple, it's still annoying.
+	// lets do something else
+endmodule
+
+module delay_tb2#(
+	parameter int NUM_TESTS = 1000,
+	parameter int CYCLES = 4,
+	parameter int WIDTH = 8
+);
+	
+	logic clk = 1'b0, rst, en;
+	logic [WIDTH-1:0] data_in, data_out;
+	
+	delay #(
+		.CYCLES(CYCLES),
+		.WIDTH(WIDTH)
+	) DUT (
+		.*
+	);
+	
+	initial begin : clk_gen
+		forever #5 clk <= ~clk;
+	end
+	
+		initial begin : stim_proc
+		$timeformat(=9, 0, " ns");
+		
+		rst <= 1'b1;
+		en <= 1'b0;
+		data_in <= '0;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		
+		for (int i = 0; i < NUM_TESTS; i++) begin
+			data_in <= $urandom;
+			en <= $urandom;
+			@(posedge clk);
+		end
+		
+		disable clk_gen;
+		disable check_output;
+		$display("Tests completed.");
+	end
+	
+	// lets use another construct that's in systemverilog we can take advantage of
+	// a queue!
+	logic [WIDTH-1:0] model_queue[$];
+	
+	// if we think about it, a delay can be modeled as a queue, where the number of delay cycles matches the amount of times we push into the queue before we take our first read
+	
+	// lets generate the model
+	always ff @(posedge clk or posedge rst) begin
+		// on reset, initialize the queue with CYCLES 0 values to mimic the reset behaviour of the DUT
+		if (rst) begin
+			model_queue = {}; // reset it
+			for (int i = 0; i < CYCLES; i++) model_queue.push_back('0); // fill it
+		end else if (en) begin
+			// update the queue by popping the front and pushing the new input
+			// note that these are blocking assignments
+			
+			// the void cast is not necessary, but if we call a function that returns a value and don't assign anything, the simulator will report a warning, like if we did a [[nodiscard]] in c++. casting to void suppresses that error
+			void'(model_queue.pop_front());
+			model_queue.push_back(data_in);
+			// alternatively, we can use this syntax but this is pretty unreadable
+			//model_queue = {model_queue[1:$], data_in};
+		end
+	end
+	
+	// simpler model than previous one, so now we can bring back the assertion and use this. however, there's another much simpler way to do this
+	assert property (@(posedge clk) disable iff (rst) data_out == correct_out);
+endmodule
+
+module delay_tb3#(
+	parameter int NUM_TESTS = 1000,
+	parameter int CYCLES = 4,
+	parameter int WIDTH = 8
+);
+	
+	logic clk = 1'b0, rst, en;
+	logic [WIDTH-1:0] data_in, data_out;
+	
+	delay #(
+		.CYCLES(CYCLES),
+		.WIDTH(WIDTH)
+	) DUT (
+		.*
+	);
+	
+	initial begin : clk_gen
+		forever #5 clk <= ~clk;
+	end
+	
+		initial begin : stim_proc
+		$timeformat(=9, 0, " ns");
+		
+		rst <= 1'b1;
+		en <= 1'b0;
+		data_in <= '0;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		
+		for (int i = 0; i < NUM_TESTS; i++) begin
+			data_in <= $urandom;
+			en <= $urandom;
+			@(posedge clk);
+		end
+		
+		disable clk_gen;
+		disable check_output;
+		$display("Tests completed.");
+	end
+	
+	// our goal here is to try to do it solely with assertions
+	// assert property (@(posedge clk) disable iff (rst) data_out == $past(data_in, CYCLES, en));
+	// same problem here, until there have been CYCLES pushes into the delay, this assertion will fail the early testbench. 
+	
+	// lets try to fix this with a counter
+	int count;
+	always_ff @(posedge clk or posedge rst) begin
+		if (rst) count <= 0;
+		else if (en && count < CYCLES) count <= count + 1;
+	end
+	
+	assert property (@(posedge clk) disable iff (rst) count == CYCLES |-> data_out == $past(data_in, CYCLES, en)); 
+	// now this works, but we're leaving out CYCLES number of cycles where the TB isn't testing your dut. all testbenches should be testing everyting at every clock cycle for functionaltiy
+	assert propert (@(posedge clk) disable iff (rst) count < CYCLES |-> data_out == '0);
+	// now we're testing for the remaining CYCLES number of cycles
+	assert property (@(posedge clk) disable iff (rst) !en |-> $stable(data_out));
+	// now we're testing for if the enable isn't asserted that the delay shouldn't move
+endmodule
+
+module delay_tb4#(
+	parameter int NUM_TESTS = 1000,
+	parameter int CYCLES = 4,
+	parameter int WIDTH = 8
+);
+	
+	logic clk = 1'b0, rst, en;
+	logic [WIDTH-1:0] data_in, data_out;
+	
+	delay #(
+		.CYCLES(CYCLES),
+		.WIDTH(WIDTH)
+	) DUT (
+		.*
+	);
+	
+	initial begin : clk_gen
+		forever #5 clk <= ~clk;
+	end
+	
+		initial begin : stim_proc
+		$timeformat(=9, 0, " ns");
+		
+		rst <= 1'b1;
+		en <= 1'b0;
+		data_in <= '0;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		
+		for (int i = 0; i < NUM_TESTS; i++) begin
+			data_in <= $urandom;
+			en <= $urandom;
+			@(posedge clk);
+		end
+		
+		disable clk_gen;
+		disable check_output;
+		$display("Tests completed.");
+	end
+		// new weird construct that's awesome. what we've been waiting for is that the enable has been asserted for at least CYCLES number of cycles, so we can check for that with the [-> CYCLES] construct, which will be the antecedent of the implication before it checks for the consequence. 
+	// one thing to note, the amount of times a signal is passed in and required to be asserted X number of times does NOT need to be consecutive. so in this instance it can be 0 1 0 1 0 1 0 0 0 0 1 and on that last 1, it will start the assertion.
+	// one thing to note about assertions is that all the variables inside it are sampled at the clock edge defined, so clk, en, data_out, data_in, CYCLES, en. BUT the thing with disable is that it isn't sampled the same time as the clock edge, so if it changes in between the clock edge weird things can happen.
+	// this is why complex disable conditions may be bad and shouldn't be used, as it can cause behavior that will waste time. sometimes don't even use a disable statement so that sampling is consistent. 
+		assert property (@(posedge clk) disable iff (rst) en [-> CYCLES] |-> data_out == $past(data_in, CYCLES, en)); 
+		// now, we want to ensure that when the reset clears, data_out is 0 for CYCLES cycles
+		assert property (@(posedge clk) $fell(rst) |-> data_out == '0 throughout en [-> CYCLES]); 
+		// $fell() checks for if something asserted the sample before is no longer asserted
+		// throughout will make sure data_out is '0 for a window of time defined by the [-> #] construct. a little complicated. "throughout CYCLES cycles when en is asserted, we need to assert that data_out is 0"
+		
+		assert property (@(posedge clk) rst |=> data_out == '0);
+		assert property (@(posedge clk) disable iff (rst) !en |=> $stable(data_out));
+// all these assertions are basically what we want to do. the throughout and [->] construct may be a bit confusing, so however powerful, it requires an informed reader to understand what's going on. 	
+endmodule
+
+
+moduke simple_pipeline_with_en_tb#(
+	parameter int NUM_TESTS = 1000,
+	parameter int WIDTH = 8
+);
+
+	logic clk, rst, en, valid_in, valid_out;
+	logic [WIDTH-1:0] data_in[8], data_out;
+	
+	simple_pipeline_with_en #(.WIDTH(WIDTH)) DUT (.*);
+	
+	initial begin : clk_gen
+		forever #5 clk <= ~clk;
+	end
+	
+	initial begin : stim_proc
+		$timeformat(-9, 0, " ns");
+		rst <= 1'b1;
+		en <= 1'b0;
+		valid_in <= 1'b0;
+		data_in <= {default: '0};
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		@(posedge clk);
+		
+		// run tests
+		for (int i = 0; i < NUM_TESTS; i++) begin
+			en <= $urandom;
+			for (int j = 0; j < 8; j++) data_in[j] <= $urandom;
+			valid_in <= $urandom;
+			@(posedge clk);
+		end
+		
+		disable clk_gen;
+		@display("Tests completed.");
+	end
+	
+	function automatic logic is_out_correct(logic [WIDTH-1:0] data_in[8]);
+		logic [WIDTH-1:0] sum = 0;
+		for (int i = 0; i < 4; i++) sum += data_in[i*2] * data_in[i*2+1];
+		returm sum == data_out; // data out being stimmed by DUT from stim_proc
+	endfunction
+
+	function automatic logic is_out_correct(logic [WIDTH-1:0] data_in[8], logic [WIDTH-1:0] data_out);
+		logic [WIDTH-1:0] sum = 0;
+		for (int i = 0; i < 4; i++) sum += data_in[i*2] * data_in[i*2+1];
+		returm sum == data_out; // data out being stimmed by DUT from stim_proc
+	endfunction
+	
+	// technically whitebox testing, which isn't recommended in verification world. we're using a defined latency in order to make our assertion easier
+	// assert property (@(posedge clk) disable iff (rst) en [-> DUT.LATENCY] |=> data_out == is_out_correct($past(data_in, DUT.LATENCY, en)));
+	// this will give a bunch of errors! why? sampling issues persist. if we looked at the waveform, we can see that the data_out *should* be matching, but  it's actually changing instantly when the assertion is made. in order to change this, we edit the function to take in BOTH data_in and data_out so it's at the same sample time and won't change before the assertion is made. 
+	assert property (@(posedge clk) disable iff (rst) en [-> DUT.LATENCY] |=> data_out == is_out_correct($past(data_in, DUT.LATENCY, en), data_out));
+	// now this works! went from bad to less bad
+	assert property (@(posedge clk) disable iff (rst) en [-> DUT.LATENCY] |-> valid_out == $past(valid_in, DUT.LATENCY, en)); 
+	// we're checking to make sure our valid_out is asserted LATENCY cycles after valid_in is asserted :thumbsup:
+	assert property (@(posedge clk) $fell(rst) |-> !valid_out throughout en [-> DUT.LATENCY]);
+	// now we want to make sure that when reset falls, we have DUT.LATENCY amount of 0's for valid out to ensure the pipeline is working properly and not pushing a valid signal too early. 
+	assert property (@(posedge clk) $fell(rst) |-> data_out == '0 throughout en [-> DUT.LATENCY]);
+	// lets do the same thing but for the output since the reset should clear all values in the pipeline
+	assert property (@(posedge clk) !en |=> $stable(data_out) && @stable(valid_out)); 
+	// now we make sure that when the pipeline isn't enabled, everything is stable and stays the same
+	assert property (@(posedge clk) rst |=> data_out == '0);
+	assert property (@(posedge clk) rst |=> !valid_out);
+	// now we verify the functionality of our reset and we're done with this testbench!
+	
+	// one of the crazy thigns here is that as long as the pipelined circuit has a valid_in/out, data that flows in and out, we can modify the model and reuse A LOT of this code in order to test any pipelined circuit that we want. 
+endmodule
+
+
+moduke simple_pipeline_with_en_tb#(
+	parameter int NUM_TESTS = 1000,
+	parameter int WIDTH = 8
+);
+	import dut_pkg::latency;
+	localparam LATENCY = dut_pkg::latency(); // make a package so we're blackbox testing and we just know the latency of the pipeline
+	logic clk, rst, en, valid_in, valid_out;
+	logic [WIDTH-1:0] data_in[8], data_out;
+	
+	simple_pipeline_with_en #(.WIDTH(WIDTH)) DUT (.*);
+	
+	initial begin : clk_gen
+		forever #5 clk <= ~clk;
+	end
+	
+	initial begin : stim_proc
+		$timeformat(-9, 0, " ns");
+		rst <= 1'b1;
+		en <= 1'b0;
+		valid_in <= 1'b0;
+		data_in <= {default: '0};
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		@(posedge clk);
+		
+		// run tests
+		for (int i = 0; i < NUM_TESTS; i++) begin
+			en <= $urandom;
+			for (int j = 0; j < 8; j++) data_in[j] <= $urandom;
+			valid_in <= $urandom;
+			@(posedge clk);
+		end
+		
+		disable clk_gen;
+		@display("Tests completed.");
+	end
+	
+	function automatic logic is_out_correct(logic [WIDTH-1:0] data_in[8]);
+		logic [WIDTH-1:0] sum = 0;
+		for (int i = 0; i < 4; i++) sum += data_in[i*2] * data_in[i*2+1];
+		returm sum == data_out; // data out being stimmed by DUT from stim_proc
+	endfunction
+
+	function automatic logic model(logic [WIDTH-1:0] data_in[8]);
+		logic [WIDTH-1:0] sum = 0;
+		for (int i = 0; i < LATENCY; i++) sum += data_in[i*2] * data_in[i*2+1];
+		returm sum;
+	endfunction
+	
+	// this is good, but we have to consider the case where our input data is NOT valid. this has asserted that we're gonna get a clean flow of data, no problemos
+	assert property (@(posedge clk) disable iff (rst) en [-> LATENCY] |=> data_out == model($past(data_in, LATENCY, en)));
+	assert property (@(posedge clk) disable iff (rst) valid_in |-> en [-> LATENCY] ##1 data_out == model($past(data_in, LATENCY, en)));
+	// the first one will trigger every latency for data_out, the second one will check for only when valid_in is asserted.
+	assert property (@(posedge clk) disable iff (rst) en [-> LATENCY] |=> valid_out == $past(valid_in, LATENCY, en));
+	
+	// this is a good way to test in general, but we don't always have to look back in time, instead, we can carry values with us
+	
+	property check_outout_p;
+		logic [WIDTH-1:0] correct_data_out;
+		@(posedge clk) disable iff (rst) (valid_in && en, correct_data_out = model(data_in)) |-> en [-> LATENCY] ##1 data_out == correct_data_out;
+		// if valid in, calculate correct data of current data_in, then wait LATENCY clock cycles, and on the next one assert data_out is correct. this way we don't have to look back in time and we can carry a value with us. we can extend sequences like crazy, but at that point you might wanna split it up. 
+	endproperty
+	assert property (check_output_p);	
+endmodule
+```
+# Coverage
+```systemverilog
+module fifo_tb#(
+	parameter int NUM_TEST = 1000,
+	parameter int WIDTH = 8,
+	parameter int DEPTH = 16
+);
+
+	logic clk = 1'b0, rst, full, wr_en, empty, rd_en;
+	logic [WIDTH-1:0] wr_data, rd_data; 
+	
+	fifo #(.WIDTH(WIDTH), .DEPTH(DEPTH)) DUT (.*);
+	
+	initial begin : clk_gen
+		forever #5 clk <= ~clk;
+	end
+	
+	inital begin : stim_proc
+		rst <= 1'b1;
+		rd_en <= 1'b0;
+		wr_en <= 1'b0;
+		wr_data <= '0;
+		repeat (5) @(posedge clk);
+		@(negedge clk);
+		rst <= 1'b0;
+		
+		for (int i = 0; i < NUM_TESTS; i++) begin
+			wr_data <= $urandom;
+			wr_en <= $urandom;
+			rd_en <= $urandom;
+		end
+		
+		disable clk_gen;
+		$display("Tests completed.");
+	end
+	
+	assert property (@(posedge clk) DUT.valid_wr |-> !full);
+	assert property (@(posedge clk) DUT.valid_rd |-> !empty);
+	
+	logic [WIDTH-1:0] correct_rd_data;
+	logic [WIDTH-1:0] model_queue[$];
+	
+	// model the functionality of the FIFO with a queue
+	always_ff @(posedge clk or posedge rst) begin
+		if (rst) model_queue = {};
+		else begin
+			automatic int size model_queue.size();
+			if (rd_en && size > 0) correct_rd_data <= model_queue.pop_front();
+			if (wr_en && size < DEPTH) model_queue.push_back(wr_data);
+		end
+	end
+endmodule
+
+
+
+
+```
 
 
 
