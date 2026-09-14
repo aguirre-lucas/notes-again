@@ -1,0 +1,31 @@
+Going over the syllabus shenanigans. 
+First bit of slides now
+# The Big Picture
+- ![[Pasted image 20260911220623.png]]
+	- Have some input messages, transduce them and generate an input signal, that then gets transmitted through a channel and is received by a receiver, which generates an output signal and gets transduced to create the output message
+	- The biggest challenge that is faces is the distortion and noise when traveling through the channel
+- What is communication?
+	- Transmitting information from one place to another
+- Channel: the physical medium between the transmitter and receiver
+- Types of Channels and Signals
+	- Air: Acoustic
+	- Nothign: Radio Frequency (RF) / electromagnetic (EM) waves, photons
+	- Optical Fiber: Light
+	- (Metal) wire (e.g. twisted-wire pair, coaxial cable, waveguide): electrical (voltage or current variations), e.g. Ethernet, USB (Firewire), DSL, Cable
+	- Water: Acoustic
+- Why do we use Radio Frequency (RF)?
+	- Pass through materials
+	- Send over large distance without having to pull wire
+	- Can modulate it with information
+	- "invisible", not disruptive
+	- can use it as Radar (sensing)
+	- Divide up the communication medium
+- Problems of RF?
+	- Unguided EM wave, radiated by the transmit antenna, is a carrier of the signal
+	- Strong signal attenuation (up to 100-200dB). Hence, high transmit power is required
+	- Susceptible to external interference
+	- Antennas are required. Size of antenna needs to be comparable with wavelength
+- ![[Pasted image 20260913183103.png]]
+	- Brief overview of digital communication (offered in spring :eyes:) (requires stochastic methods tho so might be a while before i take that :sadde:)
+- A brief history of telecommunication explained, not writing allat
+- ![[Pasted image 20260913190527.png]]Signal processing in a modem
