@@ -31,7 +31,7 @@
 - The surface of a sphere of radius $d$ is $4 \pi d^2$. So, if $Pt$ watts leave an isoradiator, then the power density at distance $d$ is $\frac{Pt}{4\pi d^2}$
 	- Isoradiators waste a lot of power, antennas usually have direction
 - The observer is sufficiently far from the transmitter. The antenna has a power gain $Gt$. The far-field power density is $\frac{PtGt}{4\pi d^2}$
-- Receive power at distance $d$ $$\begin{align} Pr(d) &= \frac{PtGtAe}{4 \pi d^2} \\ &= \frac{Pt \cdot Gt \cdot Gr  \cdot \lambda^2}{(4 \pi d)^2} \\ &= \frac{Pt \cdot Gt \cdot Gr  \cdot c^2}{(4 \pi df)^2}\end{align}$$ This equation is called the **Friis Free Space Equation**
+- Receive power at distance $d$ $$\begin{align} P_r(d) &= \frac{PtGtAe}{4 \pi d^2} \\ &= \frac{Pt \cdot Gt \cdot Gr  \cdot \lambda^2}{(4 \pi d)^2} \\ &= \frac{Pt \cdot Gt \cdot Gr  \cdot c^2}{(4 \pi df)^2}\end{align}$$ This equation is called the **Friis Free Space Equation**
 	- $Ae$ is the effective aperture, $Ae = \frac{\lambda^2 Gr}{4 \pi}$
 	- $Gr$ is the receive antenna gain
 	- In practice, this ratio will be higher than 2 - ji
@@ -40,10 +40,10 @@
 - *How does the received power vary with frequency?*
 	- Power drop $\propto 1 / f^2$ higher frequency = less power we receive
 # Decibel Notation
-- $GdB = 10log_{10}G$
+- $G_{dB} = 10log_{10}G$
 	- $G$ is the antenna gain
 - To convert from dB to linear units
-	- $G = 10^{\frac{GdB}{10}}$
+	- $G = 10^{\frac{G_{dB}}{10}}$
 - Common Decibel Values
 
 | Value | Linear | Decibel |
