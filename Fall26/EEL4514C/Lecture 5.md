@@ -3,10 +3,11 @@
 - Inner Products and Norms
 - Signals and Time Averages
 - Special Functions (complex exponential, Dirac delta, unit step)
+- 
 - Fourier Series
 	- We need Fourier series and transform and LaPlace transform and all these transforms like dtft or z because periodic signals are easier to analyze and in order to decompose them, we do the Fourier series. now say we want to do the same analysis on a signal that is not periodic, so now we introduce the Fourier transform. then for signals that don't have a Fourier transform, we introduce the LaPlace transform that has a region of convergence that dictates if a signal can be converted or not.
 # Complex Numbers
-- A complex number is a pair of real numbers: $$z =(x,y) = x + jy = Re\{z\} + jIM\{z\} \qquad  j= \sqrt{-1} \qquad \text{ the imaginary unit}$$
+- A complex number is a pair of real numbers: $$z =(x,y) = x + jy = \Re\{z\} + j\Im\{z\} \qquad  j= \sqrt{-1} \qquad \text{ the imaginary unit}$$
 - Cartesian form: $z = x + jy$
 	- x = Re(z), the real part of z
 	- y = Im(z), the imaginary part of z

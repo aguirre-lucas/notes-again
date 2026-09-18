@@ -1,0 +1,87 @@
+# Agenda
+- Special Functions
+- Fourier Series
+- Frequency Response of Periodic Signal in LTI System
+# Special Functions
+- (continuing from end of last lecture)
+- Properties:
+	- **Sampling or Sifting Property**$$\begin{align} \int_{-\infty}^{\infty}g(t)\delta(t-T)dt &=\int_{-\infty}^{\infty}g(T)\delta(t-T)dt \\ &= g(T) \int_{-\infty}^{\infty}\delta(t-T)dt \qquad \text{integral resolves to 1} \\ &= g(T) \end{align}$$
+- Unit Step
+	- The *unit step function* $u(t)$ is given by $$u(t) = \begin{cases} 0, \qquad t \lt 0 \\ 1, \qquad t \ge 0 \end{cases}$$
+		- Note that $$\int_{-\infty}^{t}\delta(u)du = \begin{cases} 0, \qquad t \lt 0 \\ 1, \qquad t \ge 0 \end{cases} = u(t)$$Thus $$\frac{d}{dt}u(t) = \delta(t)$$
+# Fourier Series
+- Frequency Basis
+	- $$\boxed{x(t) = \sum_{k=-\infty}^{\infty}c_k\phi_k(t)}$$
+	- x(t) is the real and periodic signal with fundamental frequency $f_0$ and fundamental period $T_0$
+	- $\phi_k(t)$ is the *frequency basis* and is either $\cos(k2\pi f_0 t)$ or $\sin(k2\pi f_0 t)$
+	- $\omega_0 = 2\pi f_0$: fundamental angular frequency
+	- Properties ji mentioned verbally
+		- represent a signal with a series, with a sum over a bunch of signals. phi_k is the basis of a signal
+		- the inner product of the two bases have to be orthogonal (=0)
+		- all the basis functions have to be independent of each other, meaning we cannot represent a signal base using a linear combination of other bases
+		- common basis for class is trigonometric sin/cos that's written above, k and f_0 are different frequency component, and here x is real and periodic as the basis is real and periodic
+- Fourier Series
+	- Synthesis equation (Fourier Series) $$\begin{align} x(t) &= \sum_{k=0}^{\infty} a_k \cos(k\omega_0t) + b_k\sin(k\omega_0t) \\ &= a_0 + \sum_{k=1}^{\infty} a_k \cos(k\omega_0t) + b_k\sin(k\omega_0t)\end{align}$$
+		- a_0 is the DC component, making b_0 = 0
+		- Called synthesis equation because if we know a_k and b_k we can *synthesize* x(t)
+	- Analysis equation (Fourier series coefficients): $$\begin{align} a_0 &= \frac1{T_0}\int_{T_0} x(t)dt \\ a_k &= \frac2{T_0} \int_{T_0}x(t)\cos(k\omega_0t)dt, \qquad k \ge 1 \\ b_k &= \frac2{T_0} \int_{T_0}x(t)\sin(k\omega_0t)dt, \qquad k \ge 1  \end{align}$$
+		- this is how we get the coefficients to synthesize, and as long as we know $\omega_0$ we can reconstruct the entire signal
+	- This is the *real* version of the Fourier series. 
+	- Later on we unify phi but this is the starting point where x(t) is real and periodic
+	- In practice, we don't use these and instead use the complex exponential form
+- Bandwidth (BW)
+	- Measure of:
+		- How much frequency is used by a signal?
+		- How much signal will pass through a system?
+	- Usually determined by specifying frequency range that contains most (e.g.99%) of signal's power
+	- How to calculate? 
+	- First need to represent signal as sum of signals at individual frequencies (sinusoids) (what the Fourier series does)
+	- Two cases: periodic and aperiodic
+- Case 1: Periodic Signals
+	- Let s(t) be a periodic signal under some conditions
+		- may be real, or may be complex
+	- The fundamental frequency of a periodic signal with period $T_0$ is $f_1 = \frac1{T_0}$ 
+	- A complex exponential/sinusoid at the fundamental frequency is given by $$\begin{align} g_1(t) &= e^{j2\pi f_1t} \\ &= e^{\frac{j2\pi t}{T_0}} \\ &= \cos\left ( \frac{2\pi t}{T_0} \right ) + j\sin \left (\frac{2\pi t}{T_0} \right )\end{align}$$
+		- This type of function is very important, and we call this function a frequency analyzer
+	  
+	- The nth harmonic frequency of a signal with period $T_0$ is $f_n = nf_1 = n/T_0$ 
+	- Let $g_n(t)$ be a complex exponential $$\begin{align} g_n(t) &= e^{j2\pi f_nt} \\ &= e^{\frac{jn2\pi t}{T_0}} \\ &= \cos\left ( \frac{n2\pi t}{T_0} \right ) + j\sin \left (\frac{n2\pi t}{T_0} \right )\end{align}$$
+		- g_n(t) is the nth harmonic of the signal
+	- Then $\{g_n(t), -\infty \lt n \lt \infty \}$ is a basis for s(t) $$ \begin{align} \implies s(t) &= \sum_{n=-\infty}^{\infty}s_ng_n(t) \\ &= \sum_{n=-\infty}^{\infty} s_ne^{\frac{jn2\pi t}{T_0}} \qquad(1) \qquad\text{Inverse Fourier Series!!!}\end{align}$$
+		- kind of like a "universe transform"
+	- Not writing all this
+	- We can calculate the coefficients as
+		- ![[Pasted image 20260918165417.png]]
+	- Then,
+		- ![[Pasted image 20260918165428.png]]
+	- Then,
+		- ![[Pasted image 20260918165440.png]]
+		- "pretty straightforward" - Ji. End formula is what matters the most 
+	- I.e. $$s_n = \frac1{T_0}\int_{a}^{T_0+a}s(t)e^{-\frac{jn2\pi t}{T_0}}dt \qquad (2) \qquad \text{Foward Fourier Series}$$
+		- (1) and (2) define the *complex Fourier series*
+		- Note that equality in (1) is in the sense that the norm of the error goes to zero as the number of sinusoids goes to $\infty$
+		- For this equation, if we know s(t) we can get s_n, but if we use the inverse FS with s_n it may not give back s(t) equally. So the equal sign doesn't necessarily mean equality, as explained right above.
+- Examples
+	- ![[Pasted image 20260918170211.png]]
+	- It's assumed as $n \to \infty$ the closer the waveform will reflect the real signal. 
+	- Let's begin our study of frequency decomposition of signals by considering periodic signals
+		- ![[Pasted image 20260918170545.png]]
+	- Let $T_0$ be the fundamental period of s(t). It's $\approx$ 4
+		- ![[Pasted image 20260918171650.png]]
+			- 1/2 is the AC component, and this can help us plot the frequency component
+			- Since k is an integer in a sin function, we can make some simplifications that are put in the final result
+		- ![[Pasted image 20260918171759.png]]
+			- Here, in this special case s_n is real so we don't have to plot the complex part, since it doesn't exist.
+			- Periodic in time domain, but not periodic in frequency domain
+			- We see a lot that in a signal in the time domain that's periodic and continuous, the frequency domain it's aperiodic and discrete. If we reverse it, the same type of thing would happen
+- Complex Fourier Series
+	- ![[Pasted image 20260918172551.png]]
+	- (In order for the complex Fourier series to exist, we define these conditions) For a piecewise regular function x(t), then Dirichlet conditions are
+		1. $\int_{T_0}|s(t)|dt \lt \infty$
+		2. In one period, s(t) has only a finite number of maxima and minima
+		3. In one period, s(t) has only a finite number of discontinuities and each one is finite
+	- Under Dirichlet conditions, the Fourier Series of s(t) converges and is equal to s(t) whenever s(t) converges to the average of the value on the right and left limit of the discontinuous points. 
+		- We actually violate 2 in the previous example because there's infinite number of maxima and minima when the values are held high/low in time-domain
+		- We only have 2 discontinuous points on the rising/falling edge's in the period.
+		- This is why the equal sign may not hold in the Analysis equation (Forward FS) and Synthesis Equation (Inverse FS)
+		- the value of the discontinuous 
