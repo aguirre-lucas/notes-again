@@ -1,0 +1,40 @@
+# Agenda
+- Complex Numbers
+- Inner Products and Norms
+- Signals and Time Averages
+- Special Functions (complex exponential, Dirac delta, unit step)
+- Fourier Series
+	- We need Fourier series and transform and LaPlace transform and all these transforms like dtft or z because periodic signals are easier to analyze and in order to decompose them, we do the Fourier series. now say we want to do the same analysis on a signal that is not periodic, so now we introduce the Fourier transform. then for signals that don't have a Fourier transform, we introduce the LaPlace transform that has a region of convergence that dictates if a signal can be converted or not.
+# Complex Numbers
+- A complex number is a pair of real numbers: $$z =(x,y) = x + jy = Re\{z\} + jIM\{z\} \qquad  j= \sqrt{-1} \qquad \text{ the imaginary unit}$$
+- Cartesian form: $z = x + jy$
+	- x = Re(z), the real part of z
+	- y = Im(z), the imaginary part of z
+	- x and y are also often called the *in-phase* and *quadrature* components of z
+- Polar form: $z = re^{j\phi}$
+	- r = |z| is the modulus or magnitude of z
+	- $\phi$ is the angle or phase of z
+	- ![[Pasted image 20260917234443.png]]
+- Conversions:
+	- ![[Pasted image 20260917234650.png]]
+	- Addition: ![[Pasted image 20260917234718.png]]
+	- Multiplication: ![[Pasted image 20260917234728.png]]
+	- Conjugation: ![[Pasted image 20260917234735.png]]
+	- (i don't feel like writing the latex for these, i'll write them for them for the new stuff)
+- Euler's Formula
+	- ![[Pasted image 20260917235351.png]]
+	- Properties: ![[Pasted image 20260917235401.png]]
+- Inner Products and Norms
+	- The norm-squared of a signal or vector $f$ is the inner product of $f$ with itself $$||f||^2 = \langle f, f \rangle$$
+	- For signals, this simplifies to $$\langle f, f \rangle = \int_{-\infty}^{\infty}f(t)f^*(t)dt = \int_{-\infty}^{\infty} |f(t)|^2 dt$$
+	- For vectors, this simplifies to $$\langle f, f \rangle = \sum_if_if^*_i = \sum_i|f_i|^2$$
+	- Functions or vectors $f$ and $f$ are orthogonal iff $$ \langle f, g \rangle = 0$$
+- Signals and Time Averages
+	- The energy in a (possibly complex) signal $g(t)$ is $$||g(t)||^2 = E_g = \int_{-\infty}^{\infty}{|g(t)|^2 dt}$$
+	- For a real signal, this simplifies to $$||g(t)||^2 = E_g = \int_{-\infty}^{\infty}{g^2(t) dt}$$
+	- If $E_g < \infty$, then $g(t)$ is an energy signal
+	- All signals with finite amplitude *and* finite duration, then the signal is an energy signal
+		- ![[Pasted image 20260918000743.png]](don't feel like writing \begin{cases})
+	- Note that an energy signal does not have to have finite duration
+		- ![[Pasted image 20260918000817.png]]
+		- 
