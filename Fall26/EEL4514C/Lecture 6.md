@@ -84,4 +84,43 @@
 		- We actually violate 2 in the previous example because there's infinite number of maxima and minima when the values are held high/low in time-domain
 		- We only have 2 discontinuous points on the rising/falling edge's in the period.
 		- This is why the equal sign may not hold in the Analysis equation (Forward FS) and Synthesis Equation (Inverse FS)
-		- the value of the discontinuous 
+		- the value of the discontinuous point is basically the midpoint between the two values 
+			- ![[Pasted image 20260918213047.png]] basically 1/2
+		-  so for using the $s_n$ to reconstruct s(t) it wouldn't be equal at the discontinuous points
+# Frequency Response of Periodic Signal in LTI Systems
+- What happens when a periodic signal s(t) is input to a linear, time-invariant system?![[Pasted image 20260919173443.png]]
+	- h(t) is the impulse response of the signal
+- Linearity![[Pasted image 20260919173546.png]]
+	- Relearned this in fdsp, won't take too many notes on it. 
+	- Nice flow diagram of it saying how linearity should be held![[Pasted image 20260919173935.png]]
+- Time Invariance![[Pasted image 20260919175727.png]]
+	- ![[Pasted image 20260919180332.png]]
+- Example for checking LTI
+	- $y(t) = Ax(t) + B$
+		- When B=0, system is LTI
+		- When B $\ne$ 0, system is not linear, but time invariant. 
+- Convolution
+	- Consider a continuous-time LTI system $\mathcal{H\{\cdot\}}$
+	- We can write a signal x(t) as a sample of itself based on the *sampling property* of the unit impulse signal ($\delta(t)$) $$x(t) =\int_{-\infty}^{\infty}x(\tau)\delta(t-\tau)dt$$
+	- Given the impulse response $g(t) = \mathcal{H} \{\delta(t)\}$
+	- We would like to determine an expression for the output y(t) of an LTI system, given an input x(t) and the unit impulse response h(t):![[Pasted image 20260919181610.png]]
+		- The convolution is not a definition, it's an effect. If we let an input signal pass through an LTI system, then if we let output equal to the convolution of x(t) and $\delta(t)$.  
+	- Given an LTI system $\mathcal{H}\{\cdot\}$
+		- The *impulse response* h(t) is the output of the system to an impulse input $\delta(t)$ $$h(t) = \mathcal{H}\{\delta(t)\}$$
+		- Then the output (response) of the system to the input $\delta(t-\tau)$ is given by $$\mathcal{H}\{\delta(t-\tau)\} = h(t-\tau)$$This is due to the time invariance of the system![[Pasted image 20260919183117.png]]
+		- Linearity: ![[Pasted image 20260919183155.png]]
+		- Extended Linearity - sum over an infinite number of terms
+			- System operator is interchangeable with summation operator ![[Pasted image 20260919183223.png]]
+		- Extended Linearity - integration
+			- System operator is interchangeable with integration operator![[Pasted image 20260919183259.png]]
+	- Given the unit impulse response, we would like to determine an expression for the output y(t) of an LTI system, given an input x(t) and the unit impulse response h(t)
+	- Apply $\mathcal{H}\{\cdot\}$ to the input x(t), and by extended linearity, we obtain![[Pasted image 20260919183612.png]]which holds for LTI systems.
+	- We obtain the convolution integral $$\boxed{y(t) = \int_{-\infty}^{\infty}x(\tau)h(t-\tau)d\tau \overset{\Delta}{=} h(t) * x(t) = [h*x](t)}$$
+	- Now, let's write the convolution out for the Fourier series expansion of s(t-u)D![[Pasted image 20260919183958.png]]Where $s_n$ is the Fourier series coefficient and the exp is the frequency component, and this is very nice because now we can introduce some definitions
+	- ![[Pasted image 20260919184614.png]]we can see that r(t) is the same as s(t) but with the Fourier Series coefficients $s_nH(n/T_0)$ 
+	- ![[Pasted image 20260919184748.png]]In particular, we can see that r(t) is also a periodic signal with the same exact frequency components (harmonics) as s(t) but scaled by the value of H() at that frequency
+- **Eigenfunction**: An input s to a system for which the output is a scaled version of the input cs for some (possibly complex) constant c, is called an eigenfunction (or eigenvector) of the system. 
+	- The complex exponentials are the eigenfunctions of LTI systems
+	- H(f) is called the frequency response of h(t)
+	- (3) defines the Fourier Transform of h(t):
+	  **Fourier Transform**: For a signal h(t), the Fourier Transform, denoted by $\mathcal{F}\{h(t)\}$ or by H(f) or H($\omega$), is given by ![[Pasted image 20260919185233.png]]
