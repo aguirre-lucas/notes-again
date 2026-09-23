@@ -124,3 +124,6 @@
 	- H(f) is called the frequency response of h(t)
 	- (3) defines the Fourier Transform of h(t):
 	  **Fourier Transform**: For a signal h(t), the Fourier Transform, denoted by $\mathcal{F}\{h(t)\}$ or by H(f) or H($\omega$), is given by ![[Pasted image 20260919185233.png]]
+
+$$S_n (e^{jnt} + e^{-jnt}) = S_n(2\cos(nt))$$
+$$S_n = \frac{2}{\pi n}\sin\left ( \frac{n \pi}{2} \right ) \cos(nt)$$
