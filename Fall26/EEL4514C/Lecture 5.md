@@ -47,9 +47,9 @@
 - In communications, we often use signals that have $E = \infty$
 	- Example:![[Pasted image 20260918003345.png]]
 - So how should we handle such signals? Consider the time-average of energy:
-	- The *power* in a signal $g(t) is $$P_g = \lim\limits_{T \to \infty} \frac1T \int_{-T/2}^{T/2}g^2(t)dt$$
+	- The *power* in a signal $g(t)$ is $$P_g = \lim\limits_{T \to \infty} \frac1T \int_{-T/2}^{T/2}g^2(t)dt$$
 - Whenever you see a limit, you have to be concerned about when the limit exists:
-	- Periodic signals: A signal is periodic if there exists T such that $g(t) = g(t + T)$ for all $t \in \mathbb{R}$. The smallest such T is called the period of g(t)
+	- Periodic signals: A signal is periodic if there exists T such that $g(t) = g(t + T)$ for all $t \in \mathbb{Z}$. The smallest such T is called the period of g(t)
 	  If g(t) is a periodic signal with period T, then $$P_g = \frac1T \int_{-T/2+a}^{T/2+a}g^2(t)dt, \qquad \forall a \in \mathbb{R}$$
 - Certain random signals that possess *statistical regularity*
 - g(g) is a power signal if $0 \lt P_g \lt \infty$ (both nonzero and finite)

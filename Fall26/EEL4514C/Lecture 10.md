@@ -1,0 +1,44 @@
+# Recap
+- The Fourier transform of a periodic signal is nothing but a sum of the delta train where for each delta is modulated by the Fourier series coefficient
+# Agenda
+- More Fourier Transform Properties
+- Energy/Power in Freq. Domain
+# More Fourier Transform Properties
+- Gonna do less writing with latex and just write what he says and ss the work
+- ![[Pasted image 20261012224445.png]]
+	- proven last lecture
+- e.g.
+	- $g_1(t) = \sqcap(t)$ ![[Pasted image 20261012224646.png]]
+	- In all modern and useful wireless communication, this waveform is used. so be privy
+	- $g_2(t) = \sqcap(2t)$![[Pasted image 20261012224934.png]]
+	- get's narrower in the time domain and gets "stretched" in the freq domain to be wider and smaller (1/a, t/a)
+	- faster in the time domain uses more freuency in the frequency domain, this makes sense as faster clocks have higher frequency's, which in turn in the freq domain will result in a higher freq sinc()
+	- why is this important in communications?
+		- the frequency range occupied by a *digitally modulated sequence* (remember this term for later) of pulses is proportional to the bandwidth of the pulse shape
+		- Suppose we have a pulse shape that allows us to send 100 Mbps (mega bits per second) in 100 MHz. If we want to send 1 Gbps, we need to shrink the pulse by a factor of 10 (in time). Hence, we need 1 GHz in frequency (expensive, not free, i'll see why i think)
+- Time Shifting Property
+	-  ![[Pasted image 20261012234342.png]]
+	- Not much else to know besides that the sign of the complex exponential in frequency matches sign in time, where as the inverse is inverted
+	- Let's see an application of the shifting property
+- Distortionless Transmission
+	- Consider an energy signal $x(t) \iff X(f)$ input to an LTI system with response $h(t) \iff H(f)$ . Then, the output is $y(t) = x(t) * h(t) \iff Y(f) = X(f)H(f)$   
+	- $Y(f) = |Y(f)|e^{j\theta_y(f)}$ 
+	- $= |X(f)H(f)|e^{j\theta_x(f)}e^{j\theta_h(f)} = |X(f)H(f)|e^{j(\theta_x(f) + \theta_h(f))}$
+	- General form of an output signal is made up of Magnitude & Phase response
+	- Distortionless transmission:
+		- $y(t) = kx(t-t_d)$ for some real constants $k$ and $td$ (time delay)
+		- In frequency domain:
+			- $Y(f) = kX(f)e^{-j2\pi f t_d}$
+			- $H(f) = ke^{-j2\pi f t_d}$
+			- The magnitude response $|H(f)| = k$
+				- ji uses amplitude, everyone else uses magnitude, treat them as the same cuz he writes them as the same (for now)
+			- The phase response $\theta_H(f) = -2\pi f t_d \in -[\pi,\pi]$
+		- We generalize this as for different people/animals/things have different sensitivity for magnitude and phase, in relation to audio our ears act as filters so our own H(f) is different to others. Our ear's intuitively only care about the magnitude, or energy
+		- The human ear is less sensitive to phase distortion than amplitude distortion. This is important in the design of communication system for audio
+		- The human eye is more sensitive to phase distortion than amplitude distortion. This is important in the design of communication system for video
+- Nonlinear Distortion
+	- Let g(t) pass into a nonlinear function F, then nonlinear distortion occurs. For example, power amplifiers often have a nonlinear operation range
+	- e.g. f(x) = x^k for some integer k and k>1
+		- $y(t) = g(t)^k$
+		- This is bad since the system is not LTI, if k is even you don't know the phase domain, and in the time domain we don't see much and we have to use the frequency domain to analyze. 
+		- If we try to use the frequency domain.

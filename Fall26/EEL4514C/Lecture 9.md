@@ -19,7 +19,7 @@
 	- So basically, if $\tau$ and $T_0$ are the same, what we have in the time domain is![[Pasted image 20260921014816.png]]Which becomes a constant in the time domain, which means in the frequency domain becomes a delta signal. This is a special case!
 - Another special case of periodic signals (special meaning EXTREME)
 	- This example will violate Dirilecht conditions![[Pasted image 20260921015248.png]]
-	- $$s(t) = \sum_{k=-\infty}^{\infty}\delta{t-kT_0}$$Can we perform the Fourier transform of this? Yes! We can turn this into a Fourier series, then use linearity to do the Fourier transform
+	- $$s(t) = \sum_{k=-\infty}^{\infty}\delta(t-kT_0)$$Can we perform the Fourier transform of this? Yes! We can turn this into a Fourier series, then use linearity to do the Fourier transform
 	- $$S(f) = \sum_{k=-\infty}^{\infty}S_ne^{j2\pi n f_0t}$$Where this is our Fourier series
 	- $$S_n = \frac{1}{T_0}\int_{-T_0/2}^{T_0/2} \delta(t)e^{j2\pi n f_0 t}df$$As we integrate for one period, we see that in the graph only one delta function exists per period. So this entire equation simplifies to 1! $$S_n = \frac1{T_0}$$Therefore the Fourier series coefficient is this. Since it's not a function of n, it's a constant for all complex exponentials
 	- $$\mathcal{F}\left \{\frac{1}{T_0}\sum_{n=-\infty}^{\infty}e^{j2\pi n t/T_0} \right \}$$Which we move it inside around the complex exponential which simplifies to $$\frac1{T_0}\sum_{n=-\infty}^{\infty}\delta(f-\frac n{T_0}) = f_0\sum_{n=-\infty}^{\infty}\delta(f-nf_0)$$ So this is the Fourier transform of the extreme case. What we have is something weird, so if we do a time domain signal that is an "impulse train", the in the frequency domain, it is also an "impulse train". ![[Pasted image 20260921020046.png]]
@@ -38,7 +38,7 @@
 	- $g_2(t) = g(t)\cos(2\pi f_c t)$ where $f_c$ is the carrier frequency
 	- ![[Pasted image 20260921022902.png]]
 		- Tied back to the thing 2 lectures ago about frequency shifting!! Results in![[Pasted image 20260921022959.png]]
-		- So now, the bandwidth of this signal can be defined as the two zeros next to $f_c/-f_c$ ![[Pasted image 20260921023058.png]]
+		- So now, the bandwidth of this signal can be defined as the two zeros next to $\pm f_c$ ![[Pasted image 20260921023058.png]]
 		- So this is the null-to-null B = 2/$\tau$
 	- So the first bandwidth we saw we called the base bandwidth as it's around 0, but as we do the modulation and shift it in the frequency domain, we can see the negative frequencies before become positive, so we've doubled the bandwidth, which is 2 times the base bandwidth of the signal. Meanwhile, this negative component does not carry any new information. 
 # More Properties of the Fourier Transform
