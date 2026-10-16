@@ -26,19 +26,24 @@
 	- $= |X(f)H(f)|e^{j\theta_x(f)}e^{j\theta_h(f)} = |X(f)H(f)|e^{j(\theta_x(f) + \theta_h(f))}$
 	- General form of an output signal is made up of Magnitude & Phase response
 	- Distortionless transmission:
-		- $y(t) = kx(t-t_d)$ for some real constants $k$ and $td$ (time delay)
+		- $y(t) = kx(t-t_d)$ for some real constants $k$ and $t_d$ (time delay)
 		- In frequency domain:
 			- $Y(f) = kX(f)e^{-j2\pi f t_d}$
 			- $H(f) = ke^{-j2\pi f t_d}$
 			- The magnitude response $|H(f)| = k$
 				- ji uses amplitude, everyone else uses magnitude, treat them as the same cuz he writes them as the same (for now)
-			- The phase response $\theta_H(f) = -2\pi f t_d \in -[\pi,\pi]$
+			- The phase response $\theta_H(f) = -2\pi f t_d \in [-\pi,\pi)$
 		- We generalize this as for different people/animals/things have different sensitivity for magnitude and phase, in relation to audio our ears act as filters so our own H(f) is different to others. Our ear's intuitively only care about the magnitude, or energy
 		- The human ear is less sensitive to phase distortion than amplitude distortion. This is important in the design of communication system for audio
 		- The human eye is more sensitive to phase distortion than amplitude distortion. This is important in the design of communication system for video
 - Nonlinear Distortion
 	- Let g(t) pass into a nonlinear function F, then nonlinear distortion occurs. For example, power amplifiers often have a nonlinear operation range
-	- e.g. f(x) = x^k for some integer k and k>1
+	- e.g. $f(x) = x^k$ for some integer k and k>1
 		- $y(t) = g(t)^k$
 		- This is bad since the system is not LTI, if k is even you don't know the phase domain, and in the time domain we don't see much and we have to use the frequency domain to analyze. 
 		- If we try to use the frequency domain.
+		- $$\begin{align} Y(f) &= \mathcal{F}\{g(t)^k\} \\ &= \mathcal{F} \{ g(t) \cdot g(t) \cdot ... \cdot g(t)\} \\ &=G(f) * G(f) * ... *G(f) \qquad k \text{ times}   \end{align}$$
+		- If we convolve two square waves of different length, it'll look like a trapezoid
+			- ![[Pasted image 20261016174851.png]]
+		- If the bandwidth of G(f) is B, then the output bandwidth of Y(f) k\*b. This is because convolving squares of equal length is a triangle, and that trapezoid is made for all G(f) convolved k times. 
+		- This is called *spectral regrowth*
