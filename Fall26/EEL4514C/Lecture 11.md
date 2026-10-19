@@ -14,4 +14,30 @@
 	- Fourier Transform is inner-product preserving (not writing this one out)![[Pasted image 20261016181111.png]]
 	- Inner product in the time domain and inner product in the frequency domain
 	- Corollary $$E_g = ||g(t)||^2 = ||G(f)||^2$$Which is equal to $$<g(t), g(t)> \space = \space <G(f), G(f)>$$
+# Energy Spectral Density
+- Imagine an ideal bandpass filter![[Pasted image 20261018144137.png]] And consider it's real so it's symmetric in the frequency domain. So Y(f) = G(f)H(f)
+- $$ \begin{align} ||Y(f)||^2 &= \int_{-\infty}^{\infty}|Y(f)|^2df \\ &= \int_{-\infty}^{\infty}|G(f)H(f)|^2df \\ &=  \int_{f_H}^{-f_L}|G(f)|^2df + \int_{f_L}^{f_H} |G(f)|^2 df \\ &= 2 \int_{f_L}^{f_H} |G(f)|^2 df \end{align}$$And remember that G(-f) = G*(f) because g(f) is real
+	- So ^this is the energy of the signal
+	- This is a general-ish form where the output signal energy is always equal to the integrand within the band pass's frequency range. So the |G(f)|^2 is the density of energy
+- Energy Spectral Density - the ESD of a signal g(t) is $\psi_g(f) = |G(f)|^2$ 
+	- "So the physical meaning of the energy spectral density is kind of the Fourier transform of the signal but we only consider the energy, so we ignore the phase component." - Ji
+- e.g. ESD of a rectangular pulse
+	- $g(t) = \sqcap(\frac{t}{\tau})$
+	- $\xrightarrow{\mathcal{F}} G(f) = \tau sinc(\pi f \tau)$
+	- $\psi_g(f) = |G(f)|^2 = \tau^2 sinc^2(\pi f \tau)$
+- e.g ESD of a modulated signal (multiply it by a cos)
+	- Let g(t) be an energy signal with bandwidth of B. Find the ESD of $s(t)=g(t)\cos(2\pi f_0t)$ and f_0 > B
+	- ![[Pasted image 20261018150814.png]]
+	- We need f_0>B so we don't have overlapping spectra
+	- $S(f) = \frac{1}{2}(G(f-f_0) + G(f+f_0))$
+	- $\psi_s(f) = |S(f)|^2 = \left | \frac{G(f-f_0) + G(f+f_0)}{2}\right |^2$
+- $= \frac{1}{4} | G(f-f_0)G^*(f-f_0) + G(f+f_0)G^*(f+f_0) + G(f-f_0)G^*(f+f_0) + G(f+f_0)G^*(f-f_0)|$
+	-  $= \frac{1}{4} | G(f-f_0)G^*(f-f_0) + G(f+f_0)G^*(f+f_0)|$ since the last 2 terms evaluate to 0
+	- $= \frac{1}{4} |G(f-f_0)|^2 + \frac{1}{4}|G(f+f_0)|^2$
+	- So this is the ESD of a modulated signal
+- Autocorrelation Function and ESD
+	- autocorrelation means to do correlation with itself. auto = with itself
+	- correlate a functionwith a time delayed version of itself!
+	- Definition (Autocorrelation Function (Energy Signal))
+		- Let g(t) be an energy signal, then the autocorrelation function of g(t) is $$\begin{align} \psi_g(\tau) &= <g(t), g(t-\tau)> \\ &= \int_{-\infty}^{\infty}g(t)g^*(t-\tau)dt\end{align}$$
 - 
