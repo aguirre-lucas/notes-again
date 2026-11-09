@@ -20,4 +20,16 @@
 	- bandwidth 20kHz
 	- carrier freqs 540 kHz -> 1700 kHz
 	- Different Tx power for day and night because of skywave propagation
-- 
+- US Analog TV
+	- not in use anymore
+	- video signal bandwidth 4.2 MHz
+	- audio added on a carrier at 4.5 MHz
+	- total bandwidth is 4.6 MHz
+	- Sent using VSB
+		- up to 4.75 in USB
+		- up to 1.25 in LSB
+		- total 6 MHz bandwidth
+- Long Distance Telephony
+	- Phone calls, L-carrier system with FDM, don't have to know it 100% but it's cool to see
+	- Remember FDM![[Pasted image 20261021134800.png]]
+	- 
