@@ -28,7 +28,7 @@
 		- So AM is NOT power efficient, and wastes a lot of power, so why use it? The demodulation is *super* easy. 
 ## AM Demodulation
 - Square demodulation
-	- $s^2(t) = \left [ (A+m(t))\cos(\omega_c t)\right ]$
+	- $s^2(t) = \left [ (A+m(t))\cos(\omega_c t)\right ]^2$
 	- ![[Pasted image 20261019015007.png]]
 	- Now just pass it through a LPF and you'll get the signal back!
 	- ![[Pasted image 20261019015046.png]]This is the simplest demodulation of AM, but we don't use this in practice, why?

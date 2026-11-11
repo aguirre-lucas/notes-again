@@ -111,16 +111,58 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Fall26/EEL4514C/Lecture 19.md",
+                "file": "Fall26/EEL4514C/Lecture 20.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Lecture 19"
+              "title": "Lecture 20"
+            }
+          },
+          {
+            "id": "5d8b4c9cd2c959fd",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Fall26/EEL4514C/Lecture 21.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Lecture 21"
+            }
+          },
+          {
+            "id": "352033649d681b89",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Fall26/EEL4514C/Lecture 22.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Lecture 22"
+            }
+          },
+          {
+            "id": "73596de39577b76f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Fall26/EEL4514C/Lecture 23.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Lecture 23"
             }
           }
         ],
-        "currentTab": 7
+        "currentTab": 10
       }
     ],
     "direction": "vertical"
@@ -271,30 +313,34 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "f7fdf258a6c208ec",
+  "active": "73596de39577b76f",
   "lastOpenFiles": [
+    "Pasted image 20261110160104.png",
+    "Pasted image 20261110160049.png",
+    "Spring26/Pasted image 20260317182706.png",
+    "Fall26/EEL4514C/Lecture 23.md",
+    "Fall26/Images/Pasted image 20261110155614.png",
+    "Fall26/Images/Pasted image 20261110155523.png",
+    "Fall26/Images/Pasted image 20261110153110.png",
+    "Fall26/EEL4514C/Lecture 21.md",
     "Fall26/EEL4514C/Lecture 20.md",
     "Fall26/EEL4514C/Lecture 19.md",
-    "Fall26/Images/Pasted image 20261021151137.png",
     "Fall26/EEL4514C/Lecture 18.md",
-    "Fall26/Images/Pasted image 20261021134800.png",
+    "Fall26/EEL4514C/Lecture 22.md",
+    "Fall26/Images/Pasted image 20261110143229.png",
+    "Fall26/Images/Pasted image 20261110142901.png",
+    "Fall26/Images/Pasted image 20261110142744.png",
+    "Fall26/Images/Pasted image 20261110140825.png",
+    "Fall26/Images/Pasted image 20261110140555.png",
     "Fall26/EEL4514C/Lecture 17.md",
-    "Fall26/EEL4514C/Lecture 12.md",
-    "Fall26/EEL4514C/Lecture 13.md",
+    "Fall26/EEL4514C/Lecture 16.md",
     "Fall26/EEL4514C/Lecture 15.md",
     "Fall26/EEL4514C/Lecture 14.md",
+    "Fall26/EEL4514C/Lecture 13.md",
+    "Fall26/EEL4514C/Lecture 12.md",
     "Fall26/EEL4514C/Lecture 8.md",
     "Fall26/EEL4514C/Lecture 11.md",
-    "Fall26/EEL4514C/Lecture 16.md",
-    "Fall26/Images/Pasted image 20261020222128.png",
-    "Fall26/Images/Pasted image 20261020221724.png",
-    "Fall26/Images/Pasted image 20261020220458.png",
-    "Fall26/Images/Pasted image 20261020214426.png",
-    "Fall26/Images/Pasted image 20261020210658.png",
-    "Pasted image 20261020210649.png",
-    "Pasted image 20261020210553.png",
     "Fall26/EEL4514C/Lecture 10.md",
-    "Fall26/Images/Pasted image 20261020204028.png",
     "Fall26/EEL4514C/Lecture 9.md",
     "Fall26/EEL4514C/Lecture 7.md",
     "Fall26/EEL4514C/Lecture 6.md",
@@ -305,10 +351,6 @@
     "Fall26/EEL4514C/Lecture 1.md",
     "Fall25/EEL4720/Final Exam Locking In.md",
     "Fall25/COP4600/Module 5.md",
-    "Fall25/COP4600/Module 4.md",
-    "Fall25/EEE4714/Final Exam Notes.md",
-    "Spring26/EEE4511C - RTDSP/Midterm 1 Notes.md",
-    "Spring26/EEL6395 - RC2/FINN Notes.md",
     "Untitled.base",
     "Fall26/Images",
     "Fall26/EEE5502/images",

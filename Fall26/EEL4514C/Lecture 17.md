@@ -18,7 +18,7 @@
 	- Only downside is we need a little more bandwidth, but not as bad as DSB
 - ![[Pasted image 20261020193929.png]]
 	- we have input/output filters to create the smooth transition shapes in the frequency domain that are then transmitted and filtered out
-	- note we demodulate with 2cos(omega_ct)
+	- note we demodulate with $2\cos(\omega_ct)$
 - $S_{VSB}(f) = M(f-f_c) + M(f+f_c)H_i(f)$ 
 	- ![[Pasted image 20261020195148.png]]
 	- Before we do this, let's see the idea for the demodulation. Ideally, we want a perfect filter to remove the lower half. But what if our filter isn't perfect? Our resulting signal will look like this, and we can't recover our exact m(t)![[Pasted image 20261020204028.png]]
